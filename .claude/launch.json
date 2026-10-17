@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "katresna",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "C:\\Users\\Public\\katresna"],
+      "port": 3000,
+      "url": "http://localhost:3000"
+    }
+  ]
+}

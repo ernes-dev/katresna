@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #C0392B;
+  --color-brand-dark: #A93226;
+  --color-brand-light: #FDECEA;
+  --color-cream: #FFF8F0;
+}
+
+:root {
+  --primary: #C0392B;
+  --primary-dark: #A93226;
+  --primary-light: #FDECEA;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #FFF8F0;
+  color: #111827;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+html { scroll-behavior: smooth; }
+
+/* Better tap targets on mobile */
+button { touch-action: manipulation; }
+
