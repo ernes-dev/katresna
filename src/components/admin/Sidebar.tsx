@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Package, Settings, LogOut, ChevronLeft, ChevronRight, X, Images } from 'lucide-react'
+import { LayoutDashboard, Package, Settings, LogOut, Menu, X, Images } from 'lucide-react'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
@@ -41,7 +41,7 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
 
       <aside
         className={[
-          'fixed inset-y-0 left-0 z-40 bg-white border-r border-gray-100 flex flex-col',
+          'fixed inset-y-0 left-0 z-40 bg-[#FFF8F0] border-r border-[#f0e8dc] flex flex-col',
           'transition-all duration-300 ease-in-out',
           // Mobile: slide in/out
           isOpen ? 'translate-x-0' : '-translate-x-full',
@@ -53,27 +53,27 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
         ].join(' ')}
       >
         {/* Header */}
-        <div className={`h-14 border-b border-gray-100 flex items-center px-3 ${collapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className="h-16 border-b border-gray-100 flex items-center justify-between px-3">
           {!collapsed && (
-            <div className="flex-1 min-w-0 pl-1">
+            <div className="flex-1 flex justify-center">
               <Image
                 src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
                 alt="Bolen Katresna"
-                width={100}
-                height={50}
+                width={110}
+                height={55}
                 className="h-9 w-auto object-contain"
                 unoptimized
               />
             </div>
           )}
 
-          {/* Desktop collapse toggle */}
+          {/* Desktop hamburger toggle */}
           <button
             onClick={() => setCollapsed(c => !c)}
             className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition text-gray-500 flex-shrink-0"
-            title={collapsed ? 'Perlebar sidebar' : 'Kecilkan sidebar'}
+            title={collapsed ? 'Buka sidebar' : 'Tutup sidebar'}
           >
-            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            <Menu size={18} />
           </button>
 
           {/* Mobile close */}
@@ -81,7 +81,7 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
             onClick={onClose}
             className="lg:hidden flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition text-gray-500 flex-shrink-0"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         </div>
 

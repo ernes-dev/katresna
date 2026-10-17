@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (pathname === '/admin/login') return <>{children}</>
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-[#FFF8F0]">
       <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -20,7 +20,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile top bar */}
-        <div className="lg:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 h-14 flex items-center gap-3">
+        <div className="lg:hidden sticky top-0 z-20 bg-[#FFF8F0] border-b border-[#f0e8dc] px-4 h-14 flex items-center gap-3">
           <button
             onClick={() => setSidebarOpen(o => !o)}
             className="p-2 rounded-xl hover:bg-gray-100 transition text-gray-600"

@@ -54,7 +54,7 @@ export default function CartPage() {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                    className="bg-gray-100 rounded-full p-1.5 hover:bg-gray-200 transition"
+                    className="border-2 border-brand text-brand rounded-full p-1.5 hover:bg-brand-light transition"
                   >
                     <Minus size={14} />
                   </button>
