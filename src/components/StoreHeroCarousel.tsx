@@ -31,7 +31,7 @@ export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
 
   if (banners.length === 0) {
     return (
-      <div className="mt-4 aspect-video rounded-2xl bg-gray-100 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400">
+      <div className="mt-4 h-44 rounded-2xl bg-gray-100 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400">
         <ImageIcon size={32} />
         <p className="text-sm font-medium">Belum ada flyer</p>
         <p className="text-xs">Upload di Admin → Flyer</p>
@@ -48,7 +48,7 @@ export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
         style={{ scrollBehavior: 'smooth', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {banners.map((banner) => (
-          <div key={banner.id} className="min-w-full snap-center relative aspect-video rounded-2xl overflow-hidden bg-gray-100">
+          <div key={banner.id} className="min-w-full snap-center relative h-44 rounded-2xl overflow-hidden bg-gray-100">
             <Image
               src={banner.image_url}
               alt="Flyer"

@@ -124,7 +124,7 @@ export default function AdminBannersPage() {
       ) : banners.length === 0 ? (
         <div
           onClick={() => fileRef.current?.click()}
-          className="border-2 border-dashed border-gray-200 rounded-2xl aspect-video flex flex-col items-center justify-center gap-3 text-gray-400 cursor-pointer hover:border-brand hover:text-brand transition"
+          className="border-2 border-dashed border-gray-200 rounded-2xl h-44 flex flex-col items-center justify-center gap-3 text-gray-400 cursor-pointer hover:border-brand hover:text-brand transition"
         >
           <ImageIcon size={40} />
           <div className="text-center">
