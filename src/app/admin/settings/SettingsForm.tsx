@@ -10,6 +10,7 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
   const [storeName, setStoreName] = useState(initialData?.store_name || '')
   const [whatsapp, setWhatsapp] = useState(initialData?.whatsapp_number || '')
   const [address, setAddress] = useState(initialData?.address || '')
+  const [instagram, setInstagram] = useState(initialData?.instagram_url || '')
   const [districtId, setDistrictId] = useState(initialData?.origin_district_id || '')
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -22,6 +23,7 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
       store_name: storeName,
       whatsapp_number: whatsapp,
       address,
+      instagram_url: instagram || null,
       origin_district_id: districtId,
     }).eq('id', 1)
     setLoading(false)
@@ -43,6 +45,11 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
         <label className="block text-sm font-medium text-gray-700 mb-1.5">Nomor WhatsApp Toko</label>
         <input type="tel" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="628xxxxxxxxxx" className={inputClass} />
         <p className="text-xs text-gray-400 mt-1">Format internasional, contoh: 6281234567890</p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Instagram</label>
+        <input type="url" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="https://www.instagram.com/bolenkatresna/" className={inputClass} />
       </div>
 
       <div>
