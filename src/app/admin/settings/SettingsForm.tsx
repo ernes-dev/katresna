@@ -12,6 +12,7 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
   const [address, setAddress] = useState(initialData?.address || '')
   const [instagram, setInstagram] = useState(initialData?.instagram_url || '')
   const [mapsUrl, setMapsUrl] = useState(initialData?.maps_url || '')
+  const [storeHours, setStoreHours] = useState(initialData?.store_hours || '')
   const [districtId, setDistrictId] = useState(initialData?.origin_district_id || '')
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -26,6 +27,7 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
       address,
       instagram_url: instagram || null,
       maps_url: mapsUrl || null,
+      store_hours: storeHours || null,
       origin_district_id: districtId,
     }).eq('id', 1)
     setLoading(false)
@@ -57,6 +59,12 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">Link Google Maps</label>
         <input type="url" value={mapsUrl} onChange={e => setMapsUrl(e.target.value)} placeholder="https://maps.app.goo.gl/..." className={inputClass} />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Jam Operasional</label>
+        <input type="text" value={storeHours} onChange={e => setStoreHours(e.target.value)} placeholder="07.00 – 21.30 (Sabtu 07.30 – 21.30)" className={inputClass} />
+        <p className="text-xs text-gray-400 mt-1">Tampil di halaman utama, isi bebas sesuai kebutuhan</p>
       </div>
 
       <div>
