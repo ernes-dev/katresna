@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import AdminSidebar from '@/components/admin/Sidebar'
+import Image from 'next/image'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -27,7 +28,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             <Menu size={20} />
           </button>
-          <span className="font-bold text-brand text-base">Bolen Katresna</span>
+          <Image
+            src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
+            alt="Bolen Katresna"
+            width={100}
+            height={50}
+            className="h-8 w-auto object-contain"
+            unoptimized
+          />
         </div>
 
         <main className="flex-1 p-4 lg:p-6 overflow-auto">

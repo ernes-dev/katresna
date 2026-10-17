@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, Package, Settings, LogOut, ChevronLeft, ChevronRight, X, Images } from 'lucide-react'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -55,8 +56,15 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
         <div className={`h-14 border-b border-gray-100 flex items-center px-3 ${collapsed ? 'justify-center' : 'justify-between'}`}>
           {!collapsed && (
             <div className="flex-1 min-w-0 pl-1">
-              <p className="text-base font-bold text-brand leading-tight">Bolen Katresna</p>
-              <p className="text-xs text-gray-400">Seller Dashboard</p>
+              <Image
+                src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
+                alt="Bolen Katresna"
+                width={100}
+                height={50}
+                className="h-8 w-auto object-contain"
+                unoptimized
+              />
+              <p className="text-xs text-gray-400 mt-0.5">Seller Dashboard</p>
             </div>
           )}
 
