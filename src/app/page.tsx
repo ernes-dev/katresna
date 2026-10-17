@@ -41,17 +41,30 @@ export default async function HomePage() {
               <span className="truncate">{store?.address || 'Bandung'}</span>
             </div>
           </div>
-          {store?.instagram_url && (
-            <a
-              href={store.instagram_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 flex items-center gap-1.5 text-xs font-semibold text-pink-600 hover:text-pink-700 transition"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-              <span className="hidden sm:inline">Instagram</span>
-            </a>
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            {store?.maps_url && (
+              <a
+                href={store.maps_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 transition"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span className="hidden sm:inline">Maps</span>
+              </a>
+            )}
+            {store?.instagram_url && (
+              <a
+                href={store.instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs font-semibold text-pink-600 hover:text-pink-700 transition"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                <span className="hidden sm:inline">Instagram</span>
+              </a>
+            )}
+          </div>
         </div>
 
         {!store?.is_open && (

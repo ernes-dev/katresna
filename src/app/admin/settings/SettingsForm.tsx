@@ -11,6 +11,7 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
   const [whatsapp, setWhatsapp] = useState(initialData?.whatsapp_number || '')
   const [address, setAddress] = useState(initialData?.address || '')
   const [instagram, setInstagram] = useState(initialData?.instagram_url || '')
+  const [mapsUrl, setMapsUrl] = useState(initialData?.maps_url || '')
   const [districtId, setDistrictId] = useState(initialData?.origin_district_id || '')
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -24,6 +25,7 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
       whatsapp_number: whatsapp,
       address,
       instagram_url: instagram || null,
+      maps_url: mapsUrl || null,
       origin_district_id: districtId,
     }).eq('id', 1)
     setLoading(false)
@@ -50,6 +52,11 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">Instagram</label>
         <input type="url" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="https://www.instagram.com/bolenkatresna/" className={inputClass} />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Link Google Maps</label>
+        <input type="url" value={mapsUrl} onChange={e => setMapsUrl(e.target.value)} placeholder="https://maps.app.goo.gl/..." className={inputClass} />
       </div>
 
       <div>

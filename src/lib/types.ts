@@ -28,6 +28,7 @@ export interface StoreSettings {
   pickup_enabled: boolean
   is_open: boolean
   instagram_url: string | null
+  maps_url: string | null
   origin_district_id: string | null
   origin_city_id: string | null
   origin_province_id: string | null
