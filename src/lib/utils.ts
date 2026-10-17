@@ -35,21 +35,21 @@ export function buildWhatsAppMessage(params: {
     ? 'Ambil sendiri (Pick Up)'
     : `${courier} = ${formatPrice(shipping_cost)}`
 
-  const notesLine = notes ? `\n📝 Catatan: ${notes}` : ''
+  const notesLine = notes ? `\nCatatan: ${notes}` : ''
 
-  return `*Pesanan Katresna* 🛍️
+  return `*Pesanan Bolen Katresna*
 
-👤 *Nama:* ${full_name}
-📱 *No. WA:* ${whatsapp}
-📍 *Alamat:* ${address}${notesLine}
+*Nama:* ${full_name}
+*No. WA:* ${whatsapp}
+*Alamat:* ${address}${notesLine}
 
 *Detail Pesanan:*
 ${itemLines}
 
-💰 Subtotal: ${formatPrice(subtotal)}
-🚚 Pengiriman (${shippingLine})
-━━━━━━━━━━━━━━━
+Subtotal: ${formatPrice(subtotal)}
+Pengiriman: ${shippingLine}
+------------------
 *Total: ${formatPrice(total)}*
 
-_Mohon konfirmasi pesanan ini. Terima kasih! 🙏_`
+_Mohon konfirmasi pesanan ini. Terima kasih!_`
 }

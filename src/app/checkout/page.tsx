@@ -43,7 +43,9 @@ export default function CheckoutPage() {
     supabase.from('store_settings').select('pickup_enabled, whatsapp_number').eq('id', 1).single().then(({ data }) => {
       if (data) {
         setPickupEnabled(data.pickup_enabled)
-        setStoreWhatsapp(data.whatsapp_number || process.env.NEXT_PUBLIC_STORE_WHATSAPP || '')
+        const dbWa = (data.whatsapp_number || '').replace(/\D/g, '')
+        const wa = dbWa.length >= 9 ? dbWa : (process.env.NEXT_PUBLIC_STORE_WHATSAPP || '')
+        setStoreWhatsapp(wa)
       }
     })
   }, [])
