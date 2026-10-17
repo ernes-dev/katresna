@@ -2,6 +2,15 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const hostname = request.headers.get('host') || ''
+  const pathname = request.nextUrl.pathname
+
+  // admin subdomain: redirect non-/admin paths to /admin equivalent
+  if (hostname.startsWith('admin.') && !pathname.startsWith('/admin')) {
+    const target = pathname === '/' ? '/admin' : '/admin' + pathname
+    return NextResponse.redirect(new URL(target, request.url))
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -23,7 +32,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user && request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
+  if (!user && pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
@@ -31,5 +40,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|couriers/|images/).*)',],
 }
