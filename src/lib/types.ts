@@ -30,6 +30,9 @@ export interface StoreSettings {
   instagram_url: string | null
   maps_url: string | null
   store_hours: string | null
+  open_time: string | null
+  close_time: string | null
+  sat_open_time: string | null
   origin_district_id: string | null
   origin_city_id: string | null
   origin_province_id: string | null

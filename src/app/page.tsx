@@ -18,6 +18,21 @@ export default async function HomePage() {
 
   const store = settings as StoreSettings | null
 
+  function computeIsOpen(s: StoreSettings | null): boolean {
+    if (!s) return false
+    if (!s.is_open) return false
+    if (!s.open_time || !s.close_time) return s.is_open
+    const jkt = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }))
+    const day = jkt.getDay()
+    const cur = jkt.getHours() * 60 + jkt.getMinutes()
+    const openStr = day === 6 && s.sat_open_time ? s.sat_open_time : s.open_time
+    const [oh, om] = openStr.split(':').map(Number)
+    const [ch, cm] = s.close_time.split(':').map(Number)
+    return cur >= oh * 60 + om && cur < ch * 60 + cm
+  }
+
+  const isOpen = computeIsOpen(store)
+
   return (
     <>
       <Header />
@@ -30,12 +45,12 @@ export default async function HomePage() {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className={`shrink-0 flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
-                store?.is_open
+                isOpen
                   ? 'bg-green-50 text-green-600 border border-green-200'
                   : 'bg-red-50 text-red-500 border border-red-200'
               }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${store?.is_open ? 'bg-green-500' : 'bg-red-500'}`} />
-                {store?.is_open ? 'Buka' : 'Tutup'}
+                <span className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'}`} />
+                {isOpen ? 'Buka' : 'Tutup'}
               </div>
               <div className="flex items-center gap-1 text-xs text-gray-500 min-w-0">
                 <MapPin size={11} className="shrink-0 text-brand" />
@@ -67,7 +82,7 @@ export default async function HomePage() {
           )}
         </div>
 
-        {!store?.is_open && (
+        {!isOpen && (
           <div className="mt-3 bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 text-center text-sm font-medium">
             ⚠️ Toko sedang tutup. Silakan kembali nanti.
           </div>

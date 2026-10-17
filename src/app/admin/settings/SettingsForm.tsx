@@ -13,6 +13,9 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
   const [instagram, setInstagram] = useState(initialData?.instagram_url || '')
   const [mapsUrl, setMapsUrl] = useState(initialData?.maps_url || '')
   const [storeHours, setStoreHours] = useState(initialData?.store_hours || '')
+  const [openTime, setOpenTime] = useState(initialData?.open_time || '07:00')
+  const [closeTime, setCloseTime] = useState(initialData?.close_time || '21:30')
+  const [satOpenTime, setSatOpenTime] = useState(initialData?.sat_open_time || '07:30')
   const [districtId, setDistrictId] = useState(initialData?.origin_district_id || '')
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -28,6 +31,9 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
       instagram_url: instagram || null,
       maps_url: mapsUrl || null,
       store_hours: storeHours || null,
+      open_time: openTime || '07:00',
+      close_time: closeTime || '21:30',
+      sat_open_time: satOpenTime || '07:30',
       origin_district_id: districtId,
     }).eq('id', 1)
     setLoading(false)
@@ -62,9 +68,28 @@ export default function SettingsForm({ initialData }: { initialData: StoreSettin
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Jam Operasional</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Jam Operasional (tampilan)</label>
         <input type="text" value={storeHours} onChange={e => setStoreHours(e.target.value)} placeholder="07.00 – 21.30 (Sabtu 07.30 – 21.30)" className={inputClass} />
-        <p className="text-xs text-gray-400 mt-1">Tampil di halaman utama, isi bebas sesuai kebutuhan</p>
+        <p className="text-xs text-gray-400 mt-1">Teks tampil di halaman utama, isi bebas</p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Jam Buka/Tutup Otomatis</label>
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Buka (Sen–Jum, Min)</label>
+            <input type="time" value={openTime} onChange={e => setOpenTime(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Buka Sabtu</label>
+            <input type="time" value={satOpenTime} onChange={e => setSatOpenTime(e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Tutup (semua hari)</label>
+            <input type="time" value={closeTime} onChange={e => setCloseTime(e.target.value)} className={inputClass} />
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mt-1">Status Buka/Tutup otomatis berdasarkan jam. Toggle &quot;Status Toko&quot; di dashboard tetap bisa paksa tutup.</p>
       </div>
 
       <div>
