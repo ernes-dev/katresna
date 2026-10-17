@@ -2,7 +2,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Package } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import Image from 'next/image'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -28,11 +29,15 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="bg-brand rounded-xl p-2">
-            <Package size={24} className="text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">Katresna</h1>
+        <div className="flex justify-center mb-2">
+          <Image
+            src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
+            alt="Bolen Katresna"
+            width={160}
+            height={80}
+            className="h-16 w-auto object-contain"
+            unoptimized
+          />
         </div>
         <p className="text-gray-500 text-center text-sm mb-8">Dashboard Seller</p>
 
