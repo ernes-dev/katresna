@@ -32,6 +32,14 @@ export interface StoreSettings {
   origin_province_id: string | null
 }
 
+export interface Banner {
+  id: string
+  image_url: string
+  order_index: number
+  is_active: boolean
+  created_at: string
+}
+
 export interface CartItem {
   product: Product
   quantity: number
