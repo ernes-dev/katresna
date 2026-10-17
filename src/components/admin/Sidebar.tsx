@@ -61,10 +61,9 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
                 alt="Bolen Katresna"
                 width={100}
                 height={50}
-                className="h-8 w-auto object-contain"
+                className="h-9 w-auto object-contain"
                 unoptimized
               />
-              <p className="text-xs text-gray-400 mt-0.5">Seller Dashboard</p>
             </div>
           )}
 
