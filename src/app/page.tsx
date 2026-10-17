@@ -4,7 +4,7 @@ import Header from '@/components/Header'
 import { Product, Category, StoreSettings, Banner } from '@/lib/types'
 import CustomerMenu from '@/components/CustomerMenu'
 import StoreHeroCarousel from '@/components/StoreHeroCarousel'
-import { MapPin, Instagram } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -48,7 +48,7 @@ export default async function HomePage() {
               rel="noopener noreferrer"
               className="shrink-0 flex items-center gap-1.5 text-xs font-semibold text-pink-600 hover:text-pink-700 transition"
             >
-              <Instagram size={14} />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
               <span className="hidden sm:inline">Instagram</span>
             </a>
           )}
