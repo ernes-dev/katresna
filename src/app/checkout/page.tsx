@@ -85,7 +85,11 @@ export default function CheckoutPage() {
       full_name: fullName,
       whatsapp,
       address: shippingMethod === 'pickup' ? 'Ambil sendiri di outlet' : address,
-      items: items.map(i => ({ name: i.product.name, quantity: i.quantity, price: i.product.price })),
+      items: items.map(i => ({
+        name: i.variant ? `${i.product.name} (${i.variant.name})` : i.product.name,
+        quantity: i.quantity,
+        price: i.variant?.price ?? i.product.price,
+      })),
       subtotal: totalPrice(),
       shipping_cost: 0,
       courier: courierName,
@@ -121,12 +125,18 @@ export default function CheckoutPage() {
             Pesanan ({items.length} item)
           </h2>
           <div className="space-y-2">
-            {items.map(i => (
-              <div key={i.product.id} className="flex justify-between text-sm">
-                <span className="text-gray-700">{i.product.name} x{i.quantity}</span>
-                <span className="font-medium">{formatPrice(i.product.price * i.quantity)}</span>
-              </div>
-            ))}
+            {items.map(i => {
+              const p = i.variant?.price ?? i.product.price
+              const key = `${i.product.id}::${i.variant?.name ?? ''}`
+              return (
+                <div key={key} className="flex justify-between text-sm">
+                  <span className="text-gray-700">
+                    {i.product.name}{i.variant ? ` (${i.variant.name})` : ''} x{i.quantity}
+                  </span>
+                  <span className="font-medium">{formatPrice(p * i.quantity)}</span>
+                </div>
+              )
+            })}
           </div>
           <div className="border-t mt-3 pt-3 flex justify-between font-bold">
             <span>Subtotal</span>

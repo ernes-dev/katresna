@@ -2,9 +2,9 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Upload, X, Loader2 } from 'lucide-react'
+import { Upload, X, Loader2, Plus, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { Category, Product } from '@/lib/types'
+import { Category, Product, ProductVariant } from '@/lib/types'
 
 interface Props {
   categories: Category[]
@@ -22,6 +22,9 @@ export default function ProductForm({ categories, initialData, productId }: Prop
   const [categoryId, setCategoryId] = useState(initialData?.category_id || '')
   const [weightGram, setWeightGram] = useState(String(initialData?.weight_gram ?? 0))
   const [isAvailable, setIsAvailable] = useState(initialData?.is_available !== false)
+  const [variants, setVariants] = useState<{ name: string; price: string }[]>(
+    initialData?.variants?.map(v => ({ name: v.name, price: String(v.price) })) || []
+  )
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || '')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState(initialData?.image_url || '')
@@ -72,6 +75,10 @@ export default function ProductForm({ categories, initialData, productId }: Prop
         }
       }
 
+      const validVariants: ProductVariant[] = variants
+        .filter(v => v.name.trim() && v.price && !isNaN(Number(v.price)))
+        .map(v => ({ name: v.name.trim(), price: Number(v.price) }))
+
       const payload = {
         name: name.trim(),
         description: description.trim() || null,
@@ -80,6 +87,7 @@ export default function ProductForm({ categories, initialData, productId }: Prop
         weight_gram: Number(weightGram) || 0,
         is_available: isAvailable,
         image_url: finalImageUrl || null,
+        variants: validVariants.length > 0 ? validVariants : null,
         updated_at: new Date().toISOString(),
       }
 
@@ -182,6 +190,56 @@ export default function ProductForm({ categories, initialData, productId }: Prop
             className={inputClass}
           />
         </div>
+      </div>
+
+      {/* Variants */}
+      <div className="border border-gray-200 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <p className="font-medium text-gray-900 text-sm">Pilihan Kemasan</p>
+            <p className="text-xs text-gray-400">Isi 4, Isi 8, dll. Kosongkan jika tidak ada.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setVariants(v => [...v, { name: '', price: '' }])}
+            className="flex items-center gap-1.5 text-xs font-semibold text-brand hover:text-brand-dark transition"
+          >
+            <Plus size={14} />
+            Tambah
+          </button>
+        </div>
+        {variants.length === 0 ? (
+          <p className="text-sm text-gray-400 text-center py-2">Belum ada kemasan</p>
+        ) : (
+          <div className="space-y-2">
+            {variants.map((v, idx) => (
+              <div key={idx} className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  value={v.name}
+                  onChange={e => setVariants(prev => prev.map((x, i) => i === idx ? { ...x, name: e.target.value } : x))}
+                  placeholder="Nama (cth: Isi 4)"
+                  className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
+                />
+                <input
+                  type="number"
+                  value={v.price}
+                  onChange={e => setVariants(prev => prev.map((x, i) => i === idx ? { ...x, price: e.target.value } : x))}
+                  placeholder="Harga"
+                  min="0"
+                  className="w-32 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
+                />
+                <button
+                  type="button"
+                  onClick={() => setVariants(prev => prev.filter((_, i) => i !== idx))}
+                  className="text-red-400 hover:text-red-600 transition p-1"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div>

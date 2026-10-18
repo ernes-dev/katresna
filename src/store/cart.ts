@@ -1,15 +1,19 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { CartItem, Product } from '@/lib/types'
+import { CartItem, Product, ProductVariant } from '@/lib/types'
 
 interface CartStore {
   items: CartItem[]
-  addItem: (product: Product) => void
-  removeItem: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
+  addItem: (product: Product, variant?: ProductVariant) => void
+  removeItem: (productId: string, variantName?: string) => void
+  updateQuantity: (productId: string, variantName: string | undefined, quantity: number) => void
   clearCart: () => void
   totalItems: () => number
   totalPrice: () => number
+}
+
+function matches(item: CartItem, productId: string, variantName?: string): boolean {
+  return item.product.id === productId && (item.variant?.name ?? undefined) === variantName
 }
 
 export const useCartStore = create<CartStore>()(
@@ -17,33 +21,33 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
 
-      addItem: (product) => {
+      addItem: (product, variant) => {
         const items = get().items
-        const existing = items.find(i => i.product.id === product.id)
+        const existing = items.find(i => matches(i, product.id, variant?.name))
         if (existing) {
-          set({ items: items.map(i => i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i) })
+          set({ items: items.map(i => matches(i, product.id, variant?.name) ? { ...i, quantity: i.quantity + 1 } : i) })
         } else {
-          set({ items: [...items, { product, quantity: 1 }] })
+          set({ items: [...items, { product, variant, quantity: 1 }] })
         }
       },
 
-      removeItem: (productId) => {
-        set({ items: get().items.filter(i => i.product.id !== productId) })
+      removeItem: (productId, variantName) => {
+        set({ items: get().items.filter(i => !matches(i, productId, variantName)) })
       },
 
-      updateQuantity: (productId, quantity) => {
+      updateQuantity: (productId, variantName, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(productId)
+          get().removeItem(productId, variantName)
           return
         }
-        set({ items: get().items.map(i => i.product.id === productId ? { ...i, quantity } : i) })
+        set({ items: get().items.map(i => matches(i, productId, variantName) ? { ...i, quantity } : i) })
       },
 
       clearCart: () => set({ items: [] }),
 
       totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 
-      totalPrice: () => get().items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
+      totalPrice: () => get().items.reduce((sum, i) => sum + (i.variant?.price ?? i.product.price) * i.quantity, 0),
     }),
     { name: 'katresna-cart' }
   )

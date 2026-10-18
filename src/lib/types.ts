@@ -6,6 +6,11 @@ export interface Category {
   created_at: string
 }
 
+export interface ProductVariant {
+  name: string
+  price: number
+}
+
 export interface Product {
   id: string
   name: string
@@ -18,6 +23,7 @@ export interface Product {
   created_at: string
   updated_at: string
   category?: Category
+  variants?: ProductVariant[] | null
 }
 
 export interface StoreSettings {
@@ -48,6 +54,7 @@ export interface Banner {
 
 export interface CartItem {
   product: Product
+  variant?: ProductVariant
   quantity: number
 }
 
