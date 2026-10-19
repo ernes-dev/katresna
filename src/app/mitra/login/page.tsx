@@ -39,6 +39,11 @@ export default function MitraLoginPage() {
       return
     }
 
+    if (reseller.role === 'admin') {
+      router.replace('/mitra/admin')
+      return
+    }
+
     if (!reseller.kyc_photo_url) {
       router.replace('/mitra/kyc')
       return
@@ -51,11 +56,6 @@ export default function MitraLoginPage() {
 
     if (!reseller.is_active) {
       router.replace('/mitra/pending')
-      return
-    }
-
-    if (reseller.role === 'admin') {
-      router.replace('/mitra/admin')
       return
     }
 
