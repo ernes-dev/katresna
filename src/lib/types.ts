@@ -60,6 +60,7 @@ export interface CartItem {
   quantity: number
   customSelections?: Product[]
   cartItemId?: string
+  customPrice?: number
 }
 
 export interface ShippingRate {

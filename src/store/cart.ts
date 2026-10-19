@@ -36,7 +36,8 @@ export const useCartStore = create<CartStore>()(
 
       addCustomBox: (product, variant, selections) => {
         const cartItemId = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-        set({ items: [...get().items, { product, variant, quantity: 1, customSelections: selections, cartItemId }] })
+        const customPrice = variant.price + selections.reduce((s, p) => s + p.price, 0)
+        set({ items: [...get().items, { product, variant, quantity: 1, customSelections: selections, cartItemId, customPrice }] })
       },
 
       removeItem: (productId, variantName) => {
@@ -67,7 +68,7 @@ export const useCartStore = create<CartStore>()(
 
       totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 
-      totalPrice: () => get().items.reduce((sum, i) => sum + (i.variant?.price ?? i.product.price) * i.quantity, 0),
+      totalPrice: () => get().items.reduce((sum, i) => sum + (i.customPrice ?? i.variant?.price ?? i.product.price) * i.quantity, 0),
     }),
     { name: 'katresna-cart' }
   )

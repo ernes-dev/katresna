@@ -90,7 +90,7 @@ export default function CheckoutPage() {
         const name = i.customSelections?.length
           ? `${baseName}\n  Isi: ${i.customSelections.map(s => s.name).join(', ')}`
           : baseName
-        return { name, quantity: i.quantity, price: i.variant?.price ?? i.product.price }
+        return { name, quantity: i.quantity, price: i.customPrice ?? i.variant?.price ?? i.product.price }
       }),
       subtotal: totalPrice(),
       shipping_cost: 0,

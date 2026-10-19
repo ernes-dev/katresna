@@ -55,7 +55,9 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
   }
 
   const variants = product.variants || []
-  const minPrice = variants.length > 0 ? Math.min(...variants.map(v => v.price)) : 0
+
+  const bolenTotal = bolenItems.reduce((s, item) => s + (selections[item.id] || 0) * item.price, 0)
+  const grandTotal = (selectedVariant?.price ?? 0) + bolenTotal
 
   return (
     <>
@@ -95,12 +97,7 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
                 }`}
               >
                 {v.name}
-                <span className="block text-xs font-normal mt-0.5">
-                  {formatPrice(v.price)}
-                  {v.price > minPrice && (
-                    <span className="ml-1 text-orange-500 font-semibold">+{formatPrice(v.price - minPrice)}</span>
-                  )}
-                </span>
+                <span className="block text-xs font-normal mt-0.5">{formatPrice(v.price)}</span>
               </button>
             ))}
           </div>
@@ -109,13 +106,21 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
         {/* Item picker */}
         {selectedVariant && (
           <>
-            <div className="px-5 pb-2 flex-shrink-0 flex items-center justify-between">
-              <p className="text-xs font-semibold text-gray-500">PILIH ISIAN BOLEN</p>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                totalSelected >= maxItems ? 'bg-brand text-white' : 'bg-gray-100 text-gray-500'
-              }`}>
-                {totalSelected}/{maxItems}
-              </span>
+            <div className="px-5 pb-2 flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-gray-500">PILIH ISIAN BOLEN</p>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                  totalSelected >= maxItems ? 'bg-brand text-white' : 'bg-gray-100 text-gray-500'
+                }`}>
+                  {totalSelected}/{maxItems}
+                </span>
+              </div>
+              {totalSelected > 0 && (
+                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <span>Box {formatPrice(selectedVariant!.price)} + Isian {formatPrice(bolenTotal)}</span>
+                  <span className="font-semibold text-brand">{formatPrice(grandTotal)}</span>
+                </div>
+              )}
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 pb-3">
@@ -183,7 +188,7 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
           >
             <ShoppingBag size={16} />
             {selectedVariant && totalSelected > 0
-              ? `Tambah ke Keranjang (${totalSelected}/${maxItems} item) — ${formatPrice(selectedVariant.price)}`
+              ? `Tambah ke Keranjang (${totalSelected}/${maxItems} item) — ${formatPrice(grandTotal)}`
               : 'Pilih kemasan & isian dulu'}
           </button>
         </div>

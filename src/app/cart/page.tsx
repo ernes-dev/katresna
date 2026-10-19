@@ -35,7 +35,7 @@ export default function CartPage() {
         ) : (
           <div className="space-y-3">
             {items.map((item, idx) => {
-              const itemPrice = item.variant?.price ?? item.product.price
+              const itemPrice = item.customPrice ?? item.variant?.price ?? item.product.price
               const itemKey = item.cartItemId ?? `${item.product.id}::${item.variant?.name ?? ''}::${idx}`
               const isCustom = !!item.cartItemId
               return (
