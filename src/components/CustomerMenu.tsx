@@ -33,6 +33,15 @@ export default function CustomerMenu({
   const countForCategory = (catId: string) =>
     products.filter(p => p.category_id === catId).length
 
+  const groupedProducts = activeCategory === 'all'
+    ? sortedCategories
+        .map(cat => ({
+          cat,
+          items: products.filter(p => p.category_id === cat.id),
+        }))
+        .filter(g => g.items.length > 0)
+    : null
+
   return (
     <div className="mt-5">
       {/* Section title */}
@@ -41,7 +50,7 @@ export default function CustomerMenu({
         <span className="text-xs text-gray-400">{products.length} item tersedia</span>
       </div>
 
-      {/* Category tabs - GrabMart style pill tabs */}
+      {/* Category tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
         {sortedCategories.map(cat => (
           <button
@@ -68,8 +77,35 @@ export default function CustomerMenu({
         </button>
       </div>
 
-      {/* Products grid */}
-      {filtered.length === 0 ? (
+      {/* Products — grouped when Semua, flat when category selected */}
+      {activeCategory === 'all' && groupedProducts ? (
+        groupedProducts.length === 0 ? (
+          <div className="text-center py-20 text-gray-400">
+            <p className="text-5xl mb-3">🍱</p>
+            <p className="font-medium text-gray-500">Belum ada produk</p>
+          </div>
+        ) : (
+          <div className="mt-4 pb-4 space-y-6">
+            {groupedProducts.map(({ cat, items }) => (
+              <div key={cat.id}>
+                <button
+                  onClick={() => setActiveCategory(cat.id)}
+                  className="flex items-center gap-2 mb-3 group"
+                >
+                  <h3 className="font-bold text-gray-800 text-sm">{cat.name}</h3>
+                  <span className="text-xs text-gray-400">({items.length})</span>
+                  <span className="text-xs text-brand font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Lihat semua</span>
+                </button>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {items.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      ) : filtered.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <p className="text-5xl mb-3">🍱</p>
           <p className="font-medium text-gray-500">Belum ada produk di kategori ini</p>
