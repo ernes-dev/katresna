@@ -88,18 +88,13 @@ export default function AdminResellersPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8">
-      <div className="mx-auto max-w-2xl">
-        <div className="mb-6 flex items-center gap-3">
-          <Link href="/mitra/admin" className="text-gray-400 hover:text-gray-600">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-          <h1 className="text-xl font-bold text-gray-900">Kelola Reseller</h1>
-        </div>
+    <div className="max-w-2xl">
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-gray-900">Kelola Mitra</h1>
+        <p className="text-sm text-gray-500 mt-0.5">Approve dan kelola reseller & jastiper</p>
+      </div>
 
-        {/* Tabs */}
+      {/* Tabs */}
         <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
           {tabs.map(t => (
             <button
@@ -116,7 +111,7 @@ export default function AdminResellersPage() {
           ))}
         </div>
 
-        <div className="rounded-2xl bg-white shadow-sm">
+        <div className="rounded-2xl bg-white shadow-sm border border-gray-100">
           {filtered.length === 0 ? (
             <div className="py-10 text-center text-sm text-gray-400">Tidak ada data</div>
           ) : (
@@ -144,7 +139,6 @@ export default function AdminResellersPage() {
             </div>
           )}
         </div>
-      </div>
     </div>
   )
 }

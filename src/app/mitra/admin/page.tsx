@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 interface Stats {
@@ -49,12 +48,6 @@ export default function MitraAdminPage() {
     load()
   }, [router])
 
-  const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.replace('/mitra/login')
-  }
-
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -71,58 +64,19 @@ export default function MitraAdminPage() {
   ]
 
   return (
-    <div className="min-h-screen px-4 py-8">
-      <div className="mx-auto max-w-lg">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-gray-500">Dashboard</p>
-            <h1 className="text-xl font-bold text-gray-900">Admin Mitra</h1>
+    <div className="max-w-2xl">
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-500 mt-0.5">Ringkasan status mitra</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        {statCards.map(s => (
+          <div key={s.label} className="rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
+            <p className="text-xs text-gray-500">{s.label}</p>
+            <p className={`mt-1 text-3xl font-bold ${s.color}`}>{s.value}</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50"
-          >
-            Keluar
-          </button>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="mb-6 grid grid-cols-2 gap-3">
-          {statCards.map(s => (
-            <div key={s.label} className="rounded-2xl bg-white p-4 shadow-sm">
-              <p className="text-xs text-gray-500">{s.label}</p>
-              <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Navigation */}
-        <div className="space-y-3">
-          <Link
-            href="/mitra/admin/resellers"
-            className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm transition hover:bg-gray-50"
-          >
-            <div>
-              <p className="font-semibold text-gray-900">Kelola Reseller</p>
-              <p className="text-xs text-gray-500">Lihat, setujui, dan kelola mitra</p>
-            </div>
-            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-          <Link
-            href="/mitra/admin/commission"
-            className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm transition hover:bg-gray-50"
-          >
-            <div>
-              <p className="font-semibold text-gray-900">Tier Komisi</p>
-              <p className="text-xs text-gray-500">Atur struktur komisi reseller</p>
-            </div>
-            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
+        ))}
       </div>
     </div>
   )
