@@ -12,7 +12,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // mitra subdomain: redirect non-/mitra paths to /mitra equivalent
-  if (hostname.startsWith('mitra.') && !pathname.startsWith('/mitra') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+  if (hostname.startsWith('mitra.') && !pathname.startsWith('/mitra') && !pathname.startsWith('/_next') && !pathname.startsWith('/api') && !pathname.match(/\.[a-z0-9]+$/i)) {
     const target = pathname === '/' ? '/mitra' : '/mitra' + pathname
     return NextResponse.redirect(new URL(target, request.url))
   }
