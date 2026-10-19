@@ -91,6 +91,7 @@ export default async function HomePage() {
         <CustomerMenu
           products={(products as Product[]) || []}
           categories={(categories as Category[]) || []}
+          storeWhatsapp={store?.whatsapp_number?.replace(/\D/g, '') || process.env.NEXT_PUBLIC_STORE_WHATSAPP || ''}
         />
       </main>
     </>

@@ -10,9 +10,11 @@ import { formatPrice } from '@/lib/utils'
 export default function CustomerMenu({
   products,
   categories,
+  storeWhatsapp,
 }: {
   products: Product[]
   categories: Category[]
+  storeWhatsapp?: string
 }) {
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const { items, totalPrice, totalItems } = useCartStore()
@@ -42,8 +44,30 @@ export default function CustomerMenu({
         .filter(g => g.items.length > 0)
     : null
 
+  const poBulkWA = storeWhatsapp
+    ? `https://wa.me/${storeWhatsapp}?text=${encodeURIComponent('Halo Bolen Katresna, saya ingin memesan partai besar / PO reseller. Mohon info lebih lanjut.')}`
+    : undefined
+
   return (
     <div className="mt-5">
+      {/* PO Bulk Order Banner */}
+      {poBulkWA && (
+        <a
+          href={poBulkWA}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl px-4 py-3 mb-4 shadow-sm hover:opacity-90 transition"
+        >
+          <div>
+            <p className="font-bold text-sm">Pesan Partai Besar / Reseller?</p>
+            <p className="text-xs text-white/80 mt-0.5">Hubungi kami untuk harga grosir & PO</p>
+          </div>
+          <div className="bg-white/20 rounded-xl px-3 py-1.5 text-xs font-bold whitespace-nowrap">
+            Chat WA →
+          </div>
+        </a>
+      )}
+
       {/* Section title */}
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-bold text-gray-900 text-base">Menu</h2>

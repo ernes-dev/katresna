@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Package, Settings, LogOut, Menu, X, Images, FileText } from 'lucide-react'
+import { LayoutDashboard, Package, Settings, LogOut, Menu, X, Images, FileText, ClipboardList } from 'lucide-react'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
@@ -10,6 +10,7 @@ const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/products', label: 'Produk', icon: Package },
   { href: '/admin/banners', label: 'Flyer', icon: Images },
+  { href: '/admin/orders', label: 'Pesanan', icon: ClipboardList },
   { href: '/admin/invoice', label: 'Invoice', icon: FileText },
   { href: '/admin/settings', label: 'Pengaturan', icon: Settings },
 ]

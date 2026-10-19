@@ -102,9 +102,35 @@ export default function CheckoutPage() {
     const waNumber = formatWhatsApp(storeWhatsapp)
     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`
 
+    // Save order to DB for queue
+    const supabase = createClient()
+    const orderItems = items.map(i => ({
+      name: i.variant ? `${i.product.name} (${i.variant.name})` : i.product.name,
+      quantity: i.quantity,
+      price: i.customPrice ?? i.variant?.price ?? i.product.price,
+    }))
+    let queueNumber = 0
+    try {
+      const jakartaToday = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }))
+      jakartaToday.setHours(0, 0, 0, 0)
+      const { count } = await supabase.from('orders').select('*', { count: 'exact', head: true }).gte('created_at', jakartaToday.toISOString())
+      queueNumber = (count ?? 0) + 1
+      await supabase.from('orders').insert({
+        customer_name: fullName,
+        customer_whatsapp: whatsapp,
+        items: orderItems,
+        subtotal: totalPrice(),
+        shipping_method: shippingMethod,
+        address: shippingMethod === 'pickup' ? 'Ambil sendiri di outlet' : address,
+        courier: shippingMethod === 'pickup' ? null : courierLabel,
+        notes: notes || null,
+        status: 'pending',
+      })
+    } catch (_) {}
+
     clearCart()
     window.open(waUrl, '_blank')
-    router.push('/order/success')
+    router.push(`/order/success?queue=${queueNumber}`)
   }
 
   const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand text-sm"

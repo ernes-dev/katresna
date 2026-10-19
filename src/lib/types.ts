@@ -63,6 +63,20 @@ export interface CartItem {
   customPrice?: number
 }
 
+export interface Order {
+  id: string
+  customer_name: string
+  customer_whatsapp: string | null
+  items: { name: string; quantity: number; price: number }[]
+  subtotal: number
+  shipping_method: string
+  address: string | null
+  courier: string | null
+  notes: string | null
+  status: 'pending' | 'processing' | 'done' | 'cancelled'
+  created_at: string
+}
+
 export interface ShippingRate {
   courier: string
   service: string
