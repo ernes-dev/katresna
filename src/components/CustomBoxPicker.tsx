@@ -55,6 +55,7 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
   }
 
   const variants = product.variants || []
+  const minPrice = variants.length > 0 ? Math.min(...variants.map(v => v.price)) : 0
 
   return (
     <>
@@ -94,7 +95,12 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
                 }`}
               >
                 {v.name}
-                <span className="block text-xs font-normal mt-0.5">{formatPrice(v.price)}</span>
+                <span className="block text-xs font-normal mt-0.5">
+                  {formatPrice(v.price)}
+                  {v.price > minPrice && (
+                    <span className="ml-1 text-orange-500 font-semibold">+{formatPrice(v.price - minPrice)}</span>
+                  )}
+                </span>
               </button>
             ))}
           </div>
