@@ -24,22 +24,38 @@ function ProductPickerModal({ products, onSelect, onClose }: {
           <button onClick={onClose}><X size={18} className="text-gray-400" /></button>
         </div>
         <div className="overflow-y-auto p-3">
-          <div className="grid grid-cols-3 gap-2">
-            {filtered.map(p => (
-              <button key={p.id} onClick={() => { onSelect(p); onClose() }}
-                className="flex flex-col items-center text-center p-2 rounded-xl hover:bg-brand-light transition border border-transparent hover:border-brand/20">
-                <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100 mb-1.5">
-                  {p.image_url
-                    ? <Image src={p.image_url} alt={p.name} fill className="object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center text-2xl">🍱</div>
-                  }
-                </div>
-                <p className="text-xs font-semibold text-gray-800 line-clamp-2 leading-tight">{p.name}</p>
-                <p className="text-xs text-brand font-bold mt-0.5">{formatPrice(p.price)}</p>
-              </button>
-            ))}
-          </div>
-          {filtered.length === 0 && <p className="text-center text-sm text-gray-400 py-8">Produk tidak ditemukan</p>}
+          {filtered.length === 0
+            ? <p className="text-center text-sm text-gray-400 py-8">Produk tidak ditemukan</p>
+            : (() => {
+                const groups: { label: string; items: Product[] }[] = []
+                filtered.forEach(p => {
+                  const cat = (p as any).category?.name || 'Lainnya'
+                  const g = groups.find(g => g.label === cat)
+                  if (g) g.items.push(p)
+                  else groups.push({ label: cat, items: [p] })
+                })
+                return groups.map(g => (
+                  <div key={g.label} className="mb-4">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2 px-1">{g.label}</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {g.items.map(p => (
+                        <button key={p.id} onClick={() => { onSelect(p); onClose() }}
+                          className="flex flex-col items-center text-center p-2 rounded-xl hover:bg-brand-light transition border border-transparent hover:border-brand/20">
+                          <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100 mb-1.5">
+                            {p.image_url
+                              ? <Image src={p.image_url} alt={p.name} fill className="object-cover" />
+                              : <div className="w-full h-full flex items-center justify-center text-2xl">🍱</div>
+                            }
+                          </div>
+                          <p className="text-xs font-semibold text-gray-800 line-clamp-2 leading-tight">{p.name}</p>
+                          <p className="text-xs text-brand font-bold mt-0.5">{formatPrice(p.price)}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              })()
+          }
         </div>
       </div>
     </>
@@ -81,9 +97,21 @@ export default function InvoicePage() {
   const [pickerOpenFor, setPickerOpenFor] = useState<number | null>(null)
   const [invoiceNumber] = useState(() => genInvoiceNumber(false))
 
+  const CATEGORY_ORDER = ['box', 'bolen', 'promo', 'beverages']
+
   useEffect(() => {
-    createClient().from('products').select('*').eq('is_available', true).order('name')
-      .then(({ data }) => setProducts(data || []))
+    createClient().from('products').select('*, category:categories(*)').eq('is_available', true)
+      .then(({ data }) => {
+        const sorted = (data || []).sort((a: any, b: any) => {
+          const ai = CATEGORY_ORDER.indexOf(a.category?.name?.toLowerCase() || '')
+          const bi = CATEGORY_ORDER.indexOf(b.category?.name?.toLowerCase() || '')
+          const av = ai === -1 ? 99 : ai
+          const bv = bi === -1 ? 99 : bi
+          if (av !== bv) return av - bv
+          return a.name.localeCompare(b.name)
+        })
+        setProducts(sorted)
+      })
   }, [])
 
   const addItem = () => setItems(prev => [...prev, { name: '', qty: 1, price: 0 }])
@@ -198,54 +226,67 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
             </button>
           </div>
 
-          <div className="space-y-3">
-            {items.map((item, i) => (
-              <div key={i} className="border border-gray-100 rounded-xl p-3 space-y-2 bg-gray-50">
-                <button
-                  type="button"
-                  onClick={() => setPickerOpenFor(i)}
-                  className="w-full flex items-center gap-3 text-left hover:bg-white rounded-xl p-2 transition border border-dashed border-gray-200 bg-white"
-                >
-                  {item.name ? (
-                    <>
-                      {products.find(p => p.name === item.name)?.image_url && (
-                        <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
-                          <Image src={products.find(p => p.name === item.name)!.image_url!} alt={item.name} fill className="object-cover" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-800 truncate">{item.name}</p>
-                        <p className="text-xs text-brand">{formatPrice(item.price)}</p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex items-center gap-2 text-gray-400 w-full py-1">
-                      <Search size={16} />
-                      <span className="text-sm">Pilih produk dari katalog...</span>
-                    </div>
-                  )}
-                  <span className="text-xs text-brand font-semibold flex-shrink-0">Ubah</span>
-                </button>
+          {/* Header row */}
+          <div className="grid grid-cols-[1fr_48px_100px_auto] gap-2 px-1 mb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <span>Produk</span><span className="text-center">Qty</span><span>Harga</span><span />
+          </div>
 
-                <input type="text" value={item.name} onChange={e => updateItem(i, 'name', e.target.value)}
-                  placeholder="Atau ketik nama item manual" className={inputClass} />
-                <div className="flex gap-2 items-center">
+          <div className="space-y-2">
+            {items.map((item, i) => {
+              const matched = products.find(p => p.name === item.name)
+              return (
+                <div key={i} className="grid grid-cols-[1fr_48px_100px_auto] gap-2 items-center">
+                  {/* Name + picker */}
+                  <button
+                    type="button"
+                    onClick={() => setPickerOpenFor(i)}
+                    className="flex items-center gap-2 text-left bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 hover:border-brand/40 hover:bg-brand-light/30 transition min-w-0"
+                  >
+                    {matched?.image_url && (
+                      <div className="relative w-7 h-7 rounded-md overflow-hidden flex-shrink-0">
+                        <Image src={matched.image_url} alt={item.name} fill className="object-cover" />
+                      </div>
+                    )}
+                    {item.name
+                      ? <span className="text-sm font-medium text-gray-800 truncate flex-1">{item.name}</span>
+                      : <span className="text-sm text-gray-400 flex items-center gap-1.5 flex-1"><Search size={13} /> Pilih produk...</span>
+                    }
+                  </button>
+
+                  {/* Qty */}
                   <input type="number" value={item.qty} min={1}
                     onChange={e => updateItem(i, 'qty', Number(e.target.value))}
-                    className={`${inputClass} w-20`} placeholder="Qty" />
-                  <input type="number" value={item.price || ''} min={0}
-                    onChange={e => updateItem(i, 'price', Number(e.target.value))}
-                    className={`${inputClass} flex-1`} placeholder="Harga satuan" />
-                  <span className="text-xs text-gray-500 font-semibold whitespace-nowrap">{formatPrice(item.price * item.qty)}</span>
-                  {items.length > 1 && (
-                    <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-600 flex-shrink-0">
-                      <Trash2 size={16} />
-                    </button>
-                  )}
+                    className="border border-gray-200 rounded-xl px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand w-full" />
+
+                  {/* Price */}
+                  <div className="relative">
+                    <input type="number" value={item.price || ''} min={0}
+                      onChange={e => updateItem(i, 'price', Number(e.target.value))}
+                      placeholder="0"
+                      className="border border-gray-200 rounded-xl px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand w-full" />
+                  </div>
+
+                  {/* Delete */}
+                  {items.length > 1
+                    ? <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-600 p-1"><Trash2 size={15} /></button>
+                    : <span className="w-7" />
+                  }
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
+
+          {/* Subtotal per row hint */}
+          {items.some(i => i.price > 0) && (
+            <div className="mt-2 space-y-1">
+              {items.filter(i => i.name && i.price > 0).map((item, i) => (
+                <div key={i} className="flex justify-between text-xs text-gray-400 px-1">
+                  <span className="truncate max-w-[200px]">{item.name} ×{item.qty}</span>
+                  <span>{formatPrice(item.price * item.qty)}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {pickerOpenFor !== null && (
             <ProductPickerModal
