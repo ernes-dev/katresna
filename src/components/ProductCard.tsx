@@ -5,12 +5,14 @@ import { useState } from 'react'
 import { Product, ProductVariant } from '@/lib/types'
 import { useCartStore } from '@/store/cart'
 import { formatPrice } from '@/lib/utils'
+import CustomBoxPicker from './CustomBoxPicker'
 
 export default function ProductCard({ product }: { product: Product }) {
   const { items, addItem, updateQuantity, totalItems } = useCartStore()
   const [pickerOpen, setPickerOpen] = useState(false)
 
-  const hasVariants = !!(product.variants && product.variants.length > 0)
+  const isCustomBox = !!product.is_custom_box
+  const hasVariants = !isCustomBox && !!(product.variants && product.variants.length > 0)
 
   const totalQty = items.filter(i => i.product.id === product.id).reduce((sum, i) => sum + i.quantity, 0)
   const cartItem = items.find(i => i.product.id === product.id && !i.variant)
@@ -53,6 +55,14 @@ export default function ProductCard({ product }: { product: Product }) {
             )}
           </div>
 
+          {isCustomBox && (
+            <div className="flex gap-1 flex-wrap mt-1">
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200">Isi 4</span>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200">Isi 8</span>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-200">Pilih Sendiri</span>
+            </div>
+          )}
+
           {hasVariants && (
             <div className="flex gap-1 flex-wrap mt-1">
               {product.variants!.map(v => (
@@ -69,7 +79,7 @@ export default function ProductCard({ product }: { product: Product }) {
               <span className="font-bold text-brand text-sm">{formatPrice(displayPrice)}</span>
             </div>
 
-            {hasVariants ? (
+            {(hasVariants || isCustomBox) ? (
               <button
                 onClick={() => setPickerOpen(true)}
                 className="relative bg-brand text-white rounded-full p-1.5 hover:bg-brand-dark active:scale-90 transition-all duration-150 shadow-sm shadow-brand/30"
@@ -112,6 +122,10 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
       </div>
+
+      {pickerOpen && isCustomBox && (
+        <CustomBoxPicker product={product} onClose={() => setPickerOpen(false)} />
+      )}
 
       {pickerOpen && hasVariants && (
         <>

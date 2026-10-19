@@ -85,11 +85,13 @@ export default function CheckoutPage() {
       full_name: fullName,
       whatsapp,
       address: shippingMethod === 'pickup' ? 'Ambil sendiri di outlet' : address,
-      items: items.map(i => ({
-        name: i.variant ? `${i.product.name} (${i.variant.name})` : i.product.name,
-        quantity: i.quantity,
-        price: i.variant?.price ?? i.product.price,
-      })),
+      items: items.map(i => {
+        const baseName = i.variant ? `${i.product.name} (${i.variant.name})` : i.product.name
+        const name = i.customSelections?.length
+          ? `${baseName}\n  Isi: ${i.customSelections.map(s => s.name).join(', ')}`
+          : baseName
+        return { name, quantity: i.quantity, price: i.variant?.price ?? i.product.price }
+      }),
       subtotal: totalPrice(),
       shipping_cost: 0,
       courier: courierName,

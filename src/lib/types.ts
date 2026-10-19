@@ -20,6 +20,7 @@ export interface Product {
   image_url: string | null
   is_available: boolean
   weight_gram: number
+  is_custom_box?: boolean
   created_at: string
   updated_at: string
   category?: Category
@@ -56,6 +57,8 @@ export interface CartItem {
   product: Product
   variant?: ProductVariant
   quantity: number
+  customSelections?: Product[]
+  cartItemId?: string
 }
 
 export interface ShippingRate {
