@@ -42,9 +42,15 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
 
         <div className="p-3 flex flex-col flex-1">
-          <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 min-h-[2.5rem]">
+          <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2">
             {product.name}
           </h3>
+
+          {product.description && (
+            <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-1 leading-tight">
+              {product.description}
+            </p>
+          )}
 
           {hasVariants && (
             <div className="flex gap-1 flex-wrap mt-1.5">
