@@ -12,7 +12,12 @@ export default function MitraRoot() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        router.replace('/mitra/dashboard')
+        const { data: reseller } = await supabase.from('resellers').select('role').eq('user_id', user.id).single()
+        if (reseller?.role === 'admin') {
+          router.replace('/mitra/admin')
+        } else {
+          router.replace('/mitra/dashboard')
+        }
       } else {
         router.replace('/mitra/login')
       }
