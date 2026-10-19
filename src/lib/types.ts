@@ -21,6 +21,7 @@ export interface Product {
   is_available: boolean
   weight_gram: number
   is_custom_box?: boolean
+  stock?: number | null
   created_at: string
   updated_at: string
   category?: Category

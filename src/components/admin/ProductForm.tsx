@@ -22,6 +22,7 @@ export default function ProductForm({ categories, initialData, productId }: Prop
   const [categoryId, setCategoryId] = useState(initialData?.category_id || '')
   const [weightGram, setWeightGram] = useState(String(initialData?.weight_gram ?? 0))
   const [isAvailable, setIsAvailable] = useState(initialData?.is_available !== false)
+  const [stock, setStock] = useState(initialData?.stock != null ? String(initialData.stock) : '')
   const [variants, setVariants] = useState<{ name: string; price: string }[]>(
     initialData?.variants?.map(v => ({ name: v.name, price: String(v.price) })) || []
   )
@@ -86,6 +87,7 @@ export default function ProductForm({ categories, initialData, productId }: Prop
         category_id: categoryId || null,
         weight_gram: Number(weightGram) || 0,
         is_available: isAvailable,
+        stock: stock !== '' ? Number(stock) : null,
         image_url: finalImageUrl || null,
         variants: validVariants.length > 0 ? validVariants : null,
         updated_at: new Date().toISOString(),
@@ -254,6 +256,19 @@ export default function ProductForm({ categories, initialData, productId }: Prop
             <option key={cat.id} value={cat.id}>{cat.name}</option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Stok</label>
+        <input
+          type="number"
+          value={stock}
+          onChange={e => setStock(e.target.value)}
+          placeholder="Kosongkan = tidak terbatas"
+          min="0"
+          className={inputClass}
+        />
+        <p className="text-xs text-gray-400 mt-1">Isi 0 = Pre-order. Kosongkan jika stok tidak terbatas.</p>
       </div>
 
       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">

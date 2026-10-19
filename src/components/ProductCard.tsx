@@ -24,6 +24,8 @@ export default function ProductCard({ product }: { product: Product }) {
     ? Math.min(...product.variants!.map(v => v.price))
     : product.price
 
+  const isPreorder = product.stock === 0
+
   if (!product.is_available) return null
 
   return (
@@ -40,6 +42,11 @@ export default function ProductCard({ product }: { product: Product }) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-5xl">🍱</div>
+          )}
+          {isPreorder && (
+            <div className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+              Pre-order
+            </div>
           )}
         </div>
 

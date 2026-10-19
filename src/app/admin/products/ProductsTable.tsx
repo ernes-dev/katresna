@@ -66,6 +66,7 @@ export default function ProductsTable({ products }: { products: Product[] }) {
                 <th className="text-left p-4 text-sm font-medium text-gray-500">Produk</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-500">Kategori</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-500">Harga</th>
+                <th className="text-left p-4 text-sm font-medium text-gray-500">Stok</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-500">Status</th>
                 <th className="text-right p-4 text-sm font-medium text-gray-500">Aksi</th>
               </tr>
@@ -90,6 +91,14 @@ export default function ProductsTable({ products }: { products: Product[] }) {
                   </td>
                   <td className="p-4 text-sm text-gray-600">{(product as any).category?.name || '—'}</td>
                   <td className="p-4 font-semibold text-brand">{formatPrice(product.price)}</td>
+                  <td className="p-4 text-sm">
+                    {product.stock == null
+                      ? <span className="text-gray-400">∞</span>
+                      : product.stock === 0
+                        ? <span className="text-orange-500 font-semibold">Pre-order</span>
+                        : <span className="font-semibold text-gray-700">{product.stock}</span>
+                    }
+                  </td>
                   <td className="p-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       product.is_available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
