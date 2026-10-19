@@ -97,7 +97,7 @@ export default function MitraAdminLayout({ children }: { children: React.ReactNo
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:bg-black/20"
+          className="fixed inset-0 z-40 bg-black/20"
           onClick={() => setSidebarOpen(false)}
         />
       )}
