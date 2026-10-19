@@ -41,19 +41,20 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        <div className="p-3 flex flex-col flex-1">
-          <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2">
-            {product.name}
-          </h3>
-
-          {product.description && (
-            <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-1 leading-tight">
-              {product.description}
-            </p>
-          )}
+        <div className="p-2.5 sm:p-3 flex flex-col flex-1">
+          <div className="min-h-[2.75rem]">
+            <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-1 sm:line-clamp-2">
+              {product.name}
+            </h3>
+            {product.description && (
+              <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-1 leading-tight">
+                {product.description}
+              </p>
+            )}
+          </div>
 
           {hasVariants && (
-            <div className="flex gap-1 flex-wrap mt-1.5">
+            <div className="flex gap-1 flex-wrap mt-1">
               {product.variants!.map(v => (
                 <span key={v.name} className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-brand-light text-brand border border-brand/20">
                   {v.name}
@@ -64,7 +65,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
           <div className="flex items-end justify-between mt-auto pt-2">
             <div>
-              {hasVariants && <span className="text-[11px] text-gray-400 block leading-tight">Mulai</span>}
+              {hasVariants && <span className="text-[10px] text-gray-400 block leading-tight">Mulai</span>}
               <span className="font-bold text-brand text-sm">{formatPrice(displayPrice)}</span>
             </div>
 
