@@ -116,10 +116,10 @@ export default function ProductCard({ product }: { product: Product }) {
       {pickerOpen && hasVariants && (
         <>
           <div
-            className="fixed inset-0 bg-black/50 z-50"
+            className="fixed inset-0 bg-black/50 z-[60]"
             onClick={() => setPickerOpen(false)}
           />
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl p-5 shadow-2xl max-w-lg mx-auto">
+          <div className="fixed bottom-0 left-0 right-0 z-[70] bg-white rounded-t-3xl p-5 shadow-2xl max-w-lg mx-auto max-h-[85vh] overflow-y-auto">
             <div className="flex items-center gap-3 mb-4">
               {product.image_url && (
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
