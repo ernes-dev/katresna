@@ -87,7 +87,7 @@ export default function MitraAdminLayout({ children }: { children: React.ReactNo
     <div className="flex min-h-screen bg-[#FFF8F0]">
       {/* Desktop sidebar */}
       <aside
-        className={`hidden lg:flex lg:flex-col fixed inset-y-0 left-0 z-30 w-60 border-r border-[#f0e8dc] transform transition-transform duration-200 ${
+        className={`hidden lg:flex lg:flex-col fixed inset-y-0 left-0 z-50 w-60 border-r border-[#f0e8dc] transform transition-transform duration-200 ${
           sidebarOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'
         }`}
       >
