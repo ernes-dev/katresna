@@ -11,6 +11,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(target, request.url))
   }
 
+  // mitra subdomain: redirect non-/mitra paths to /mitra equivalent
+  if (hostname.startsWith('mitra.') && !pathname.startsWith('/mitra') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+    const target = pathname === '/' ? '/mitra' : '/mitra' + pathname
+    return NextResponse.redirect(new URL(target, request.url))
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
