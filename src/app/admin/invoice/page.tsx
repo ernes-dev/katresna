@@ -27,7 +27,6 @@ function ProductPickerModal({ products, onSelect, onClose }: {
 
   const handlePickProduct = (p: Product) => {
     const variants = Array.isArray(p.variants) ? p.variants : []
-    console.log('[picker] product:', p.name, 'variants:', variants)
     if (variants.length > 0) {
       setVariantStep({ ...p, variants })
     } else {
@@ -137,7 +136,7 @@ function ProductPickerModal({ products, onSelect, onClose }: {
   )
 }
 
-interface InvoiceItem { name: string; qty: number; price: number; isian?: string }
+interface InvoiceItem { name: string; qty: number; price: number; isian?: string[] }
 
 function formatWA(num: string) {
   const d = num.replace(/\D/g, '')
@@ -201,7 +200,7 @@ export default function InvoicePage() {
       .filter(i => i.name.trim())
       .map(i => {
         const line = `• ${i.name} x${i.qty} — ${formatPrice(i.price * i.qty)}`
-        return i.isian?.trim() ? `${line}\n  Isian: ${i.isian.trim()}` : line
+        return i.isian && i.isian.length > 0 ? `${line}\n  Isian: ${i.isian.join(', ')}` : line
       })
       .join('\n')
     const header = isPO ? '*PURCHASE ORDER BOLEN KATRESNA*' : '*INVOICE BOLEN KATRESNA*'
@@ -365,18 +364,63 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
                     ) : <span />}
                   </div>
 
-                  {/* Isian for custom box */}
-                  {matched?.is_custom_box && item.name.includes('(') && (
-                    <div className="ml-10 mr-7">
-                      <input
-                        type="text"
-                        value={item.isian ?? ''}
-                        onChange={e => setItems(prev => prev.map((it, idx) => idx === i ? { ...it, isian: e.target.value } : it))}
-                        placeholder="Isian bolen: OG Coklat, Keju, Almond, Milky..."
-                        className="w-full border border-dashed border-brand/40 bg-brand-light/30 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand/60 transition placeholder:text-gray-400"
-                      />
-                    </div>
-                  )}
+                  {/* Isian bolen picker for custom box */}
+                  {matched?.is_custom_box && item.name.includes('(') && (() => {
+                    const maxIsi = item.name.includes('Isi 8') ? 8 : 4
+                    const selected: string[] = item.isian ?? []
+                    const bolenItems = products.filter(p =>
+                      (p as any).category?.name?.toLowerCase() === 'bolen' && !p.is_custom_box
+                    )
+                    const toggle = (name: string) => {
+                      setItems(prev => prev.map((it, idx) => {
+                        if (idx !== i) return it
+                        const cur = it.isian ?? []
+                        const next = cur.includes(name)
+                          ? cur.filter(n => n !== name)
+                          : cur.length < maxIsi ? [...cur, name] : cur
+                        return { ...it, isian: next }
+                      }))
+                    }
+                    return (
+                      <div className="ml-10 mr-7 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-semibold text-gray-500">
+                            Pilih isian bolen
+                          </p>
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                            selected.length === maxIsi
+                              ? 'bg-brand text-white'
+                              : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            {selected.length}/{maxIsi}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {bolenItems.map(b => {
+                            const active = selected.includes(b.name)
+                            const full = !active && selected.length >= maxIsi
+                            return (
+                              <button
+                                key={b.id}
+                                type="button"
+                                onClick={() => toggle(b.name)}
+                                disabled={full}
+                                className={`text-xs px-3 py-1.5 rounded-full border font-medium transition ${
+                                  active
+                                    ? 'bg-brand text-white border-brand shadow-sm'
+                                    : full
+                                    ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed'
+                                    : 'bg-white text-gray-600 border-gray-200 hover:border-brand hover:text-brand'
+                                }`}
+                              >
+                                {b.name}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                  })()}
 
                   {/* Subtotal hint */}
                   {item.name && item.price > 0 && (
