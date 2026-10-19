@@ -46,6 +46,16 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.name}
           </h3>
 
+          {hasVariants && (
+            <div className="flex gap-1 flex-wrap mt-1.5">
+              {product.variants!.map(v => (
+                <span key={v.name} className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-brand-light text-brand border border-brand/20">
+                  {v.name}
+                </span>
+              ))}
+            </div>
+          )}
+
           <div className="flex items-end justify-between mt-auto pt-2">
             <div>
               {hasVariants && <span className="text-[11px] text-gray-400 block leading-tight">Mulai</span>}
