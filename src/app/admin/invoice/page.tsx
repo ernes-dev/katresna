@@ -26,8 +26,10 @@ function ProductPickerModal({ products, onSelect, onClose }: {
   })
 
   const handlePickProduct = (p: Product) => {
-    if (p.variants && p.variants.length > 0) {
-      setVariantStep(p)
+    const variants = Array.isArray(p.variants) ? p.variants : []
+    console.log('[picker] product:', p.name, 'variants:', variants)
+    if (variants.length > 0) {
+      setVariantStep({ ...p, variants })
     } else {
       onSelect(p)
       onClose()
