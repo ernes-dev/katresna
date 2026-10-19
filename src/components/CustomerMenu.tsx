@@ -17,6 +17,15 @@ export default function CustomerMenu({
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const { items, totalPrice, totalItems } = useCartStore()
 
+  const CATEGORY_ORDER = ['box', 'promo', 'beverages', 'bolen']
+  const sortedCategories = [...categories].sort((a, b) => {
+    const ai = CATEGORY_ORDER.indexOf(a.name.toLowerCase())
+    const bi = CATEGORY_ORDER.indexOf(b.name.toLowerCase())
+    const av = ai === -1 ? 99 : ai
+    const bv = bi === -1 ? 99 : bi
+    return av - bv
+  })
+
   const filtered = activeCategory === 'all'
     ? products
     : products.filter(p => p.category_id === activeCategory)
@@ -34,17 +43,7 @@ export default function CustomerMenu({
 
       {/* Category tabs - GrabMart style pill tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-        <button
-          onClick={() => setActiveCategory('all')}
-          className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-150 border ${
-            activeCategory === 'all'
-              ? 'bg-brand text-white border-brand shadow-sm'
-              : 'bg-white text-gray-600 border-gray-200 hover:border-brand/40'
-          }`}
-        >
-          Semua ({products.length})
-        </button>
-        {categories.map(cat => (
+        {sortedCategories.map(cat => (
           <button
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
@@ -57,6 +56,16 @@ export default function CustomerMenu({
             {cat.name} ({countForCategory(cat.id)})
           </button>
         ))}
+        <button
+          onClick={() => setActiveCategory('all')}
+          className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-150 border ${
+            activeCategory === 'all'
+              ? 'bg-brand text-white border-brand shadow-sm'
+              : 'bg-white text-gray-600 border-gray-200 hover:border-brand/40'
+          }`}
+        >
+          Semua ({products.length})
+        </button>
       </div>
 
       {/* Products grid */}
