@@ -74,8 +74,6 @@ export default function MitraLoginPage() {
             className="mx-auto mb-4 h-16 w-auto object-contain"
             unoptimized
           />
-          <h1 className="text-2xl font-bold text-gray-900">Portal Mitra</h1>
-          <p className="mt-1 text-sm text-gray-500">Reseller & Jastiper Bolen Katresna</p>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
