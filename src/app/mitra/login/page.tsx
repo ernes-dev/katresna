@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 
 export default function MitraLoginPage() {
@@ -65,8 +66,16 @@ export default function MitraLoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
+          <Image
+            src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
+            alt="Bolen Katresna"
+            width={160}
+            height={80}
+            className="mx-auto mb-4 h-16 w-auto object-contain"
+            unoptimized
+          />
           <h1 className="text-2xl font-bold text-gray-900">Portal Mitra</h1>
-          <p className="mt-1 text-sm text-gray-500">Bolen Katresna</p>
+          <p className="mt-1 text-sm text-gray-500">Reseller & Jastiper Bolen Katresna</p>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
