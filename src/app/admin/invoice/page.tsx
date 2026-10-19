@@ -1,9 +1,50 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, Send, Copy, Check } from 'lucide-react'
+import { Plus, Trash2, Send, Copy, Check, Search, X } from 'lucide-react'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Product } from '@/lib/types'
 import { formatPrice } from '@/lib/utils'
+
+function ProductPickerModal({ products, onSelect, onClose }: {
+  products: Product[]
+  onSelect: (p: Product) => void
+  onClose: () => void
+}) {
+  const [q, setQ] = useState('')
+  const filtered = products.filter(p => p.name.toLowerCase().includes(q.toLowerCase()))
+  return (
+    <>
+      <div className="fixed inset-0 bg-black/40 z-50" onClick={onClose} />
+      <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-white rounded-2xl shadow-2xl max-h-[80vh] flex flex-col max-w-lg mx-auto">
+        <div className="flex items-center gap-3 p-4 border-b border-gray-100">
+          <Search size={16} className="text-gray-400 flex-shrink-0" />
+          <input autoFocus type="text" value={q} onChange={e => setQ(e.target.value)}
+            placeholder="Cari produk..." className="flex-1 outline-none text-sm" />
+          <button onClick={onClose}><X size={18} className="text-gray-400" /></button>
+        </div>
+        <div className="overflow-y-auto p-3">
+          <div className="grid grid-cols-3 gap-2">
+            {filtered.map(p => (
+              <button key={p.id} onClick={() => { onSelect(p); onClose() }}
+                className="flex flex-col items-center text-center p-2 rounded-xl hover:bg-brand-light transition border border-transparent hover:border-brand/20">
+                <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100 mb-1.5">
+                  {p.image_url
+                    ? <Image src={p.image_url} alt={p.name} fill className="object-cover" />
+                    : <div className="w-full h-full flex items-center justify-center text-2xl">🍱</div>
+                  }
+                </div>
+                <p className="text-xs font-semibold text-gray-800 line-clamp-2 leading-tight">{p.name}</p>
+                <p className="text-xs text-brand font-bold mt-0.5">{formatPrice(p.price)}</p>
+              </button>
+            ))}
+          </div>
+          {filtered.length === 0 && <p className="text-center text-sm text-gray-400 py-8">Produk tidak ditemukan</p>}
+        </div>
+      </div>
+    </>
+  )
+}
 
 interface InvoiceItem {
   name: string
@@ -37,6 +78,7 @@ export default function InvoicePage() {
   const [cashbackValue, setCashbackValue] = useState(0)
   const [products, setProducts] = useState<Product[]>([])
   const [copied, setCopied] = useState(false)
+  const [pickerOpenFor, setPickerOpenFor] = useState<number | null>(null)
   const [invoiceNumber] = useState(() => genInvoiceNumber(false))
 
   useEffect(() => {
@@ -156,43 +198,62 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
             </button>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             {items.map((item, i) => (
-              <div key={i} className="flex gap-2 items-start">
-                <div className="flex-1 space-y-1.5">
-                  <select
-                    className={`${inputClass} bg-white`}
-                    value=""
-                    onChange={e => {
-                      const p = products.find(p => p.id === e.target.value)
-                      if (p) { updateItem(i, 'name', p.name); updateItem(i, 'price', p.price) }
-                    }}
-                  >
-                    <option value="">Pilih produk...</option>
-                    {products.map(p => (
-                      <option key={p.id} value={p.id}>{p.name} — {formatPrice(p.price)}</option>
-                    ))}
-                  </select>
-                  <input type="text" value={item.name} onChange={e => updateItem(i, 'name', e.target.value)}
-                    placeholder="Nama item (bisa edit manual)" className={inputClass} />
-                  <div className="flex gap-2">
-                    <input type="number" value={item.qty} min={1}
-                      onChange={e => updateItem(i, 'qty', Number(e.target.value))}
-                      className={`${inputClass} w-20`} placeholder="Qty" />
-                    <input type="number" value={item.price || ''} min={0}
-                      onChange={e => updateItem(i, 'price', Number(e.target.value))}
-                      className={`${inputClass} flex-1`} placeholder="Harga satuan" />
-                    <span className="text-xs text-gray-400 self-center whitespace-nowrap">= {formatPrice(item.price * item.qty)}</span>
-                  </div>
+              <div key={i} className="border border-gray-100 rounded-xl p-3 space-y-2 bg-gray-50">
+                <button
+                  type="button"
+                  onClick={() => setPickerOpenFor(i)}
+                  className="w-full flex items-center gap-3 text-left hover:bg-white rounded-xl p-2 transition border border-dashed border-gray-200 bg-white"
+                >
+                  {item.name ? (
+                    <>
+                      {products.find(p => p.name === item.name)?.image_url && (
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                          <Image src={products.find(p => p.name === item.name)!.image_url!} alt={item.name} fill className="object-cover" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-800 truncate">{item.name}</p>
+                        <p className="text-xs text-brand">{formatPrice(item.price)}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-2 text-gray-400 w-full py-1">
+                      <Search size={16} />
+                      <span className="text-sm">Pilih produk dari katalog...</span>
+                    </div>
+                  )}
+                  <span className="text-xs text-brand font-semibold flex-shrink-0">Ubah</span>
+                </button>
+
+                <input type="text" value={item.name} onChange={e => updateItem(i, 'name', e.target.value)}
+                  placeholder="Atau ketik nama item manual" className={inputClass} />
+                <div className="flex gap-2 items-center">
+                  <input type="number" value={item.qty} min={1}
+                    onChange={e => updateItem(i, 'qty', Number(e.target.value))}
+                    className={`${inputClass} w-20`} placeholder="Qty" />
+                  <input type="number" value={item.price || ''} min={0}
+                    onChange={e => updateItem(i, 'price', Number(e.target.value))}
+                    className={`${inputClass} flex-1`} placeholder="Harga satuan" />
+                  <span className="text-xs text-gray-500 font-semibold whitespace-nowrap">{formatPrice(item.price * item.qty)}</span>
+                  {items.length > 1 && (
+                    <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-600 flex-shrink-0">
+                      <Trash2 size={16} />
+                    </button>
+                  )}
                 </div>
-                {items.length > 1 && (
-                  <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-600 mt-1 flex-shrink-0">
-                    <Trash2 size={16} />
-                  </button>
-                )}
               </div>
             ))}
           </div>
+
+          {pickerOpenFor !== null && (
+            <ProductPickerModal
+              products={products}
+              onSelect={p => { updateItem(pickerOpenFor, 'name', p.name); updateItem(pickerOpenFor, 'price', p.price) }}
+              onClose={() => setPickerOpenFor(null)}
+            />
+          )}
         </div>
 
         {/* Shipping + notes + cashback */}
