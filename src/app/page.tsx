@@ -10,7 +10,7 @@ export default async function HomePage() {
   const supabase = await createClient()
 
   const [{ data: products }, { data: categories }, { data: settings }, { data: banners }] = await Promise.all([
-    supabase.from('products').select('*, category:categories(*)').eq('is_available', true).order('created_at'),
+    supabase.from('products').select('*, category:categories(*)').eq('is_available', true).order('variants', { ascending: true, nullsFirst: false }).order('created_at'),
     supabase.from('categories').select('*').order('name'),
     supabase.from('store_settings').select('*').eq('id', 1).single(),
     supabase.from('banners').select('*').eq('is_active', true).order('order_index').order('created_at').limit(5),
