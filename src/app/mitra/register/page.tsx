@@ -12,6 +12,7 @@ export default function MitraRegisterPage() {
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [role, setRole] = useState<'reseller' | 'jastiper'>('reseller')
   const [loading, setLoading] = useState(false)
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -44,6 +45,7 @@ export default function MitraRegisterPage() {
       full_name: fullName,
       email,
       phone,
+      role,
     })
 
     if (insertError) {
@@ -66,6 +68,24 @@ export default function MitraRegisterPage() {
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <h2 className="mb-6 text-lg font-semibold text-gray-800">Buat Akun Mitra Baru</h2>
           <form onSubmit={handleRegister} className="space-y-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">Daftar Sebagai</label>
+              <div className="grid grid-cols-2 gap-3">
+                {(['reseller', 'jastiper'] as const).map(r => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setRole(r)}
+                    className={`rounded-xl border-2 p-3 text-left transition ${role === r ? 'border-brand bg-brand-light' : 'border-gray-200 bg-white hover:border-brand/40'}`}
+                  >
+                    <p className={`text-sm font-bold capitalize ${role === r ? 'text-brand' : 'text-gray-800'}`}>{r}</p>
+                    <p className="mt-0.5 text-xs text-gray-500">
+                      {r === 'reseller' ? 'Jual produk Katresna' : 'Antar pesanan pelanggan'}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Nama Lengkap</label>
               <input
