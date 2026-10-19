@@ -17,7 +17,7 @@ export default function CustomerMenu({
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const { items, totalPrice, totalItems } = useCartStore()
 
-  const CATEGORY_ORDER = ['box', 'promo', 'beverages', 'bolen']
+  const CATEGORY_ORDER = ['box', 'bolen', 'promo', 'beverages']
   const sortedCategories = [...categories].sort((a, b) => {
     const ai = CATEGORY_ORDER.indexOf(a.name.toLowerCase())
     const bi = CATEGORY_ORDER.indexOf(b.name.toLowerCase())
