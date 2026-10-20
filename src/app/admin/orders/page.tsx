@@ -151,86 +151,95 @@ export default function OrdersPage() {
             const date = new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', timeZone: 'Asia/Jakarta' })
             const isToday = new Date(order.created_at).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) === new Date().toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' })
 
+            const reseller = isAdmin ? (order as any).reseller : null
+            const showActions = order.status !== 'cancelled' && order.status !== 'done'
+
             return (
-              <div key={order.id} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-3">
-                    {isToday && qNum > 0 && (
-                      <div className="w-10 h-10 rounded-xl bg-brand text-white font-bold text-lg flex items-center justify-center flex-shrink-0">
-                        #{qNum}
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-bold text-gray-900">{order.customer_name}</p>
-                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${st.color}`}>{st.label}</span>
-                        {isAdmin && (order as any).reseller && (
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                            (order as any).reseller.role === 'jastiper'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-purple-100 text-purple-700'
-                          }`}>
-                            {(order as any).reseller.role === 'jastiper' ? 'Jastiper' : 'Reseller'} · {(order as any).reseller.full_name}
-                          </span>
-                        )}
-                        {order.customer_whatsapp && (
-                          <a href={`https://wa.me/62${order.customer_whatsapp.replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-xs text-green-600 font-semibold hover:underline">
-                            <Phone size={11} /> {order.customer_whatsapp}
-                          </a>
-                        )}
-                      </div>
+              <div key={order.id} className="bg-white rounded-2xl border border-[#f0e8dc] shadow-sm overflow-hidden">
+                {/* Header */}
+                <div className="flex items-start gap-3 p-4 pb-3">
+                  {isToday && qNum > 0 && (
+                    <div className="w-9 h-9 rounded-full bg-brand text-white font-bold text-sm flex items-center justify-center flex-shrink-0 shadow-sm shadow-brand/20">
+                      {qNum}
                     </div>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="font-bold text-brand">{formatPrice(order.subtotal)}</p>
-                    <p className="text-xs text-gray-400 flex items-center gap-1 justify-end mt-0.5">
-                      <Clock size={10} /> {isToday ? time : `${date} ${time}`}
-                    </p>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-bold text-gray-900 truncate leading-tight">{order.customer_name}</p>
+                      <p className="font-bold text-brand whitespace-nowrap">{formatPrice(order.subtotal)}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${st.color}`}>{st.label}</span>
+                      {reseller && (
+                        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                          reseller.role === 'jastiper' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                        }`}>
+                          {reseller.role === 'jastiper' ? 'Jastiper' : 'Reseller'} · {reseller.full_name}
+                        </span>
+                      )}
+                      <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                        <Clock size={10} /> {isToday ? time : `${date} ${time}`}
+                      </span>
+                    </div>
+                    {order.customer_whatsapp && (
+                      <a href={`https://wa.me/62${order.customer_whatsapp.replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-green-600 font-semibold hover:underline mt-1.5">
+                        <Phone size={11} /> {order.customer_whatsapp}
+                      </a>
+                    )}
                   </div>
                 </div>
 
                 {/* Items */}
-                <div className="bg-gray-50 rounded-xl p-3 mb-3 text-xs text-gray-600 space-y-1">
-                  {(order.items as any[]).map((item, i) => (
-                    <div key={i} className="flex justify-between">
-                      <span>{item.name} x{item.quantity}</span>
-                      <span>{formatPrice(item.price * item.quantity)}</span>
-                    </div>
-                  ))}
+                <div className="px-4">
+                  <div className="rounded-xl border border-gray-100 divide-y divide-gray-50 overflow-hidden">
+                    {(order.items as any[]).map((item, i) => (
+                      <div key={i} className="flex justify-between gap-3 px-3 py-2 text-xs">
+                        <span className="text-gray-700 min-w-0">
+                          {item.name} <span className="text-gray-400">×{item.quantity}</span>
+                        </span>
+                        <span className="text-gray-500 font-medium whitespace-nowrap">{formatPrice(item.price * item.quantity)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Shipping */}
-                <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
-                  <MapPin size={11} className="text-brand" />
-                  <span>{order.shipping_method === 'pickup' ? 'Ambil sendiri' : order.courier}</span>
+                <div className="flex items-center gap-1.5 text-xs text-gray-400 px-4 pt-3">
+                  <MapPin size={12} className="text-brand flex-shrink-0" />
+                  <span className="font-medium text-gray-500">{order.shipping_method === 'pickup' ? 'Ambil sendiri' : (order.courier || 'Pengiriman')}</span>
                   {order.address && order.shipping_method !== 'pickup' && (
-                    <span className="truncate max-w-xs">— {order.address}</span>
+                    <span className="truncate">— {order.address}</span>
                   )}
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2">
-                  {nextStatus && (
-                    <button
-                      onClick={() => updateStatus(order.id, nextStatus)}
-                      className="flex-1 bg-brand text-white py-2 rounded-xl text-sm font-semibold hover:bg-brand-dark transition"
-                    >
-                      {nextStatus === 'processing' ? '✓ Proses' : '✓ Selesai'}
-                    </button>
-                  )}
-                  {order.status !== 'cancelled' && order.status !== 'done' && (
+                {showActions ? (
+                  <div className="flex gap-2 p-4 pt-3">
+                    {nextStatus && (
+                      <button
+                        onClick={() => updateStatus(order.id, nextStatus)}
+                        className="flex-1 bg-brand text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-dark active:scale-[0.99] transition shadow-sm shadow-brand/20"
+                      >
+                        {nextStatus === 'processing' ? 'Proses Pesanan' : 'Tandai Selesai'}
+                      </button>
+                    )}
                     <button
                       onClick={() => updateStatus(order.id, 'cancelled')}
-                      className="px-4 py-2 border border-red-200 text-red-500 rounded-xl text-sm font-semibold hover:bg-red-50 transition"
+                      className="px-4 py-2.5 border border-gray-200 text-gray-500 rounded-xl text-sm font-semibold hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition"
                     >
                       Batal
                     </button>
-                  )}
-                  {(order.status === 'cancelled' || order.status === 'done') && (
-                    <span className="text-xs text-gray-400 self-center">—</span>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="px-4 pt-3 pb-4">
+                    <div className={`text-center text-xs font-semibold rounded-xl py-2 ${
+                      order.status === 'done' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'
+                    }`}>
+                      {order.status === 'done' ? '✓ Pesanan selesai' : 'Pesanan dibatalkan'}
+                    </div>
+                  </div>
+                )}
               </div>
             )
           })}
