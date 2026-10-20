@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { makeRefCode } from '@/lib/mitra'
 
 export default function MitraRegisterPage() {
   const router = useRouter()
@@ -47,6 +48,7 @@ export default function MitraRegisterPage() {
       email,
       phone,
       role,
+      ref_code: makeRefCode(fullName),
     })
 
     if (insertError) {

@@ -17,7 +17,37 @@ export interface ResellerProfile {
   bank_status: 'pending' | 'approved' | 'rejected'
   is_active: boolean
   role: string
+  ref_code: string | null
   created_at: string
+}
+
+export function makeRefCode(name: string): string {
+  const base = (name || 'mitra')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]/g, '')
+    .slice(0, 10) || 'mitra'
+  const rand = Math.random().toString(36).slice(2, 6)
+  return `${base}-${rand}`
+}
+
+// Returns the reseller's ref_code, generating & persisting one if absent.
+export async function ensureRefCode(resellerId: string, fullName: string): Promise<string | null> {
+  const supabase = createClient()
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const code = makeRefCode(fullName)
+    const { error } = await supabase
+      .from('resellers')
+      .update({ ref_code: code })
+      .eq('id', resellerId)
+      .is('ref_code', null)
+    if (!error) {
+      const { data } = await supabase.from('resellers').select('ref_code').eq('id', resellerId).single()
+      return data?.ref_code ?? code
+    }
+  }
+  return null
 }
 
 export interface CommissionTier {

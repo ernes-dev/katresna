@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
-import { getCommissionTier, getCommissionTiers, calculateCommission, type CommissionTier, type Commission, type ResellerProfile } from '@/lib/mitra'
-import { LogOut, TrendingUp, Package, Clock } from 'lucide-react'
+import { getCommissionTier, getCommissionTiers, calculateCommission, ensureRefCode, type CommissionTier, type Commission, type ResellerProfile } from '@/lib/mitra'
+import { LogOut, TrendingUp, Package, Clock, Link2, Copy, Check } from 'lucide-react'
+
+const REFERRAL_BASE = 'https://bolenkatresna.com'
 
 function formatRupiah(n: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n)
@@ -21,6 +23,8 @@ export default function MitraDashboardPage() {
   const [commissions, setCommissions] = useState<Commission[]>([])
   const [tiers, setTiers] = useState<CommissionTier[]>([])
   const [loading, setLoading] = useState(true)
+  const [refCode, setRefCode] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -38,6 +42,13 @@ export default function MitraDashboardPage() {
       if (!profile.is_active) { router.replace('/mitra/pending'); return }
 
       setReseller(profile as ResellerProfile)
+
+      if (profile.ref_code) {
+        setRefCode(profile.ref_code)
+      } else {
+        const code = await ensureRefCode(profile.id, profile.full_name)
+        setRefCode(code)
+      }
 
       const [tiersData, { data: comData }] = await Promise.all([
         getCommissionTiers(),
@@ -59,6 +70,16 @@ export default function MitraDashboardPage() {
     const supabase = createClient()
     await supabase.auth.signOut()
     router.replace('/mitra/login')
+  }
+
+  const referralLink = refCode ? `${REFERRAL_BASE}/?ref=${refCode}` : ''
+  const copyLink = async () => {
+    if (!referralLink) return
+    try {
+      await navigator.clipboard.writeText(referralLink)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (_) {}
   }
 
   if (loading) {
@@ -133,6 +154,36 @@ export default function MitraDashboardPage() {
             <p className="text-lg font-bold text-gray-900">{totalSales}</p>
           </div>
         </div>
+
+        {/* Referral Link */}
+        {referralLink && (
+          <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="rounded-lg bg-brand/10 p-1.5">
+                <Link2 className="h-4 w-4 text-brand" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Link Referral Kamu</p>
+                <p className="text-xs text-gray-400">Sebar link ini — order dari link ini masuk ke kamu</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                readOnly
+                value={referralLink}
+                onFocus={e => e.target.select()}
+                className="flex-1 min-w-0 rounded-xl border border-gray-200 bg-[#FFF8F0] px-3 py-2 text-xs text-gray-600 outline-none"
+              />
+              <button
+                onClick={copyLink}
+                className="flex shrink-0 items-center gap-1.5 rounded-xl bg-brand px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-dark"
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? 'Tersalin' : 'Salin'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Tier Card */}
         {currentTier && (

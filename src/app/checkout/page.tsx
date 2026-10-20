@@ -8,6 +8,7 @@ import Header from '@/components/Header'
 import { useCartStore } from '@/store/cart'
 import { formatPrice, buildWhatsAppMessage, formatWhatsApp } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import { getStoredRef } from '@/components/RefCapture'
 
 type ShippingMethod = 'delivery' | 'pickup'
 
@@ -111,6 +112,14 @@ export default function CheckoutPage() {
     }))
     let queueNumber = 0
     try {
+      // Attribute to a reseller if the customer arrived via a referral link
+      let resellerId: string | null = null
+      const refCode = getStoredRef()
+      if (refCode) {
+        const { data: ref } = await supabase.from('resellers').select('id').eq('ref_code', refCode).maybeSingle()
+        resellerId = ref?.id ?? null
+      }
+
       const jakartaToday = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }))
       jakartaToday.setHours(0, 0, 0, 0)
       const { count } = await supabase.from('orders').select('*', { count: 'exact', head: true }).gte('created_at', jakartaToday.toISOString())
@@ -125,6 +134,7 @@ export default function CheckoutPage() {
         courier: shippingMethod === 'pickup' ? null : courierLabel,
         notes: notes || null,
         status: 'pending',
+        reseller_id: resellerId,
       })
     } catch (_) {}
 
