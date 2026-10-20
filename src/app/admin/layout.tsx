@@ -1,21 +1,57 @@
 'use client'
-import { useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import AdminSidebar from '@/components/admin/Sidebar'
 import Image from 'next/image'
+import { createClient } from '@/lib/supabase/client'
+
+const RESELLER_ALLOWED = ['/admin/orders', '/admin/invoice']
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isFullAdmin, setIsFullAdmin] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    if (pathname === '/admin/login') return
+    const check = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.replace('/admin/login'); return }
+      const { data: profile } = await supabase
+        .from('resellers')
+        .select('role')
+        .eq('user_id', user.id)
+        .single()
+
+      const fullAdmin = !profile || profile.role === 'admin'
+      setIsFullAdmin(fullAdmin)
+
+      if (!fullAdmin && !RESELLER_ALLOWED.some(p => pathname === p || pathname.startsWith(p + '/'))) {
+        router.replace('/admin/orders')
+      }
+    }
+    check()
+  }, [pathname, router])
 
   if (pathname === '/admin/login') return <>{children}</>
+
+  if (isFullAdmin === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FFF8F0]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex bg-[#FFF8F0]">
       <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        isFullAdmin={isFullAdmin}
       />
 
       <div className="flex-1 flex flex-col min-w-0">

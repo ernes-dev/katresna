@@ -7,23 +7,26 @@ import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 
 const navItems = [
-  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/products', label: 'Produk', icon: Package },
-  { href: '/admin/banners', label: 'Flyer', icon: Images },
-  { href: '/admin/orders', label: 'Pesanan', icon: ClipboardList },
-  { href: '/admin/invoice', label: 'Invoice', icon: FileText },
-  { href: '/admin/settings', label: 'Pengaturan', icon: Settings },
+  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, adminOnly: true },
+  { href: '/admin/products', label: 'Produk', icon: Package, adminOnly: true },
+  { href: '/admin/banners', label: 'Flyer', icon: Images, adminOnly: true },
+  { href: '/admin/orders', label: 'Pesanan', icon: ClipboardList, adminOnly: false },
+  { href: '/admin/invoice', label: 'Invoice', icon: FileText, adminOnly: false },
+  { href: '/admin/settings', label: 'Pengaturan', icon: Settings, adminOnly: true },
 ]
 
 interface Props {
   isOpen: boolean
   onClose: () => void
+  isFullAdmin: boolean
 }
 
-export default function AdminSidebar({ isOpen, onClose }: Props) {
+export default function AdminSidebar({ isOpen, onClose, isFullAdmin }: Props) {
   const pathname = usePathname()
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
+
+  const visibleItems = navItems.filter(item => isFullAdmin || !item.adminOnly)
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -89,7 +92,7 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
 
         {/* Nav */}
         <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-          {navItems.map(({ href, label, icon: Icon }) => {
+          {visibleItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(href + '/')
             return (
               <Link
