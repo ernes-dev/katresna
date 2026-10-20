@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import { ImageIcon } from 'lucide-react'
+import { Sparkles, Truck } from 'lucide-react'
 import { Banner } from '@/lib/types'
 
 export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
@@ -31,10 +31,30 @@ export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
 
   if (banners.length === 0) {
     return (
-      <div className="mt-4 h-44 rounded-2xl bg-gray-100 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400">
-        <ImageIcon size={32} />
-        <p className="text-sm font-medium">Belum ada flyer</p>
-        <p className="text-xs">Upload di Admin → Flyer</p>
+      <div className="mt-4 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand to-brand-dark px-6 py-8 shadow-float">
+        {/* Decorative layers */}
+        <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-white/10 blur-sm" />
+        <div className="pointer-events-none absolute right-10 top-16 h-24 w-24 rounded-full bg-white/5" />
+        <div className="pointer-events-none absolute -left-8 -bottom-10 h-36 w-36 rounded-full bg-black/10 blur-sm" />
+        <div className="relative">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
+            <Sparkles size={12} /> Dipanggang segar tiap hari
+          </span>
+          <h1 className="font-display mt-3 text-3xl font-semibold leading-tight text-white">
+            Bolen Katresna
+          </h1>
+          <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-white/80">
+            Bolen premium khas Bandung — lembut, renyah, isian melimpah. Pesan sekarang, kami antar.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+              <Truck size={13} /> Siap diantar
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+              🎁 Bisa PO partai besar
+            </span>
+          </div>
+        </div>
       </div>
     )
   }
