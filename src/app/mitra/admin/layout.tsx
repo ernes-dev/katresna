@@ -61,23 +61,32 @@ export default function MitraAdminLayout({ children }: { children: React.ReactNo
         }`}
       >
         {/* Logo + hamburger */}
-        <div className={`flex items-center border-b border-[#f0e8dc] h-14 px-3 gap-2 ${collapsed ? 'justify-center' : 'justify-between'}`}>
-          {!collapsed && (
-            <Image
-              src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
-              alt="Bolen Katresna"
-              width={110}
-              height={50}
-              className="h-9 w-auto object-contain"
-              unoptimized
-            />
+        <div className="relative flex items-center justify-center border-b border-[#f0e8dc] h-14 px-3">
+          {collapsed ? (
+            <button
+              onClick={() => setCollapsed(v => !v)}
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-[#f0e8dc] transition"
+            >
+              <Menu size={18} />
+            </button>
+          ) : (
+            <>
+              <Image
+                src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
+                alt="Bolen Katresna"
+                width={110}
+                height={50}
+                className="h-9 w-auto object-contain"
+                unoptimized
+              />
+              <button
+                onClick={() => setCollapsed(v => !v)}
+                className="absolute right-3 flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-[#f0e8dc] transition"
+              >
+                <Menu size={18} />
+              </button>
+            </>
           )}
-          <button
-            onClick={() => setCollapsed(v => !v)}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-[#f0e8dc] transition shrink-0"
-          >
-            <Menu size={18} />
-          </button>
         </div>
 
         {!collapsed && (
@@ -178,8 +187,10 @@ export default function MitraAdminLayout({ children }: { children: React.ReactNo
           />
         </header>
 
-        <main className="flex-1 p-4 lg:p-6">
-          {children}
+        <main className="flex-1 p-4 lg:p-8">
+          <div className="max-w-5xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

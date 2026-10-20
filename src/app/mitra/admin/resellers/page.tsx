@@ -88,57 +88,74 @@ export default function AdminResellersPage() {
   }
 
   return (
-    <div className="max-w-2xl">
+    <div>
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900">Kelola Mitra</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Approve dan kelola reseller & jastiper</p>
+        <p className="text-sm text-gray-500 mt-0.5">Approve dan kelola reseller &amp; jastiper</p>
       </div>
 
       {/* Tabs */}
-        <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                tab === t.key
-                  ? 'bg-brand text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+        {tabs.map(t => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+              tab === t.key
+                ? 'bg-brand text-white shadow-sm'
+                : 'bg-white text-gray-600 hover:bg-[#f0e8dc] border border-gray-100'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
-        <div className="rounded-2xl bg-white shadow-sm border border-gray-100">
-          {filtered.length === 0 ? (
-            <div className="py-10 text-center text-sm text-gray-400">Tidak ada data</div>
-          ) : (
-            <div className="divide-y divide-gray-50">
-              {filtered.map(r => (
-                <Link
-                  key={r.id}
-                  href={`/mitra/admin/resellers/${r.id}`}
-                  className="flex items-center justify-between px-4 py-3 transition hover:bg-gray-50"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">{r.full_name}</p>
-                    <p className="truncate text-xs text-gray-500">{r.email} · {r.phone}</p>
-                    <div className="mt-1.5 flex flex-wrap gap-1">
-                      <StatusBadge status={r.kyc_status} />
-                      <StatusBadge status={r.bank_status} />
-                      <StatusBadge active={r.is_active} />
-                    </div>
-                  </div>
-                  <svg className="ml-3 h-4 w-4 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+      <div className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
+        {filtered.length === 0 ? (
+          <div className="py-10 text-center text-sm text-gray-400">Tidak ada data</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-[#FFF8F0]">
+                  <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Nama</th>
+                  <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Email / HP</th>
+                  <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">KYC</th>
+                  <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Bank</th>
+                  <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {filtered.map(r => (
+                  <tr key={r.id} className="hover:bg-[#FFF8F0] transition-colors">
+                    <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">{r.full_name}</td>
+                    <td className="px-4 py-3 text-gray-500">
+                      <p className="text-xs">{r.email}</p>
+                      {r.phone && <p className="text-xs text-gray-400">{r.phone}</p>}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={r.kyc_status} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={r.bank_status} /></td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge active={r.is_active} /></td>
+                    <td className="px-4 py-3 text-right">
+                      <Link
+                        href={`/mitra/admin/resellers/${r.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-brand hover:text-brand-dark transition"
+                      >
+                        Detail
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

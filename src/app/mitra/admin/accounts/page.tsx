@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { formatPrice } from '@/lib/utils'
-import { Building2, Users, TrendingUp, Search } from 'lucide-react'
+import { Building2, Users, TrendingUp, Search, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface MitraAccount {
   id: string
@@ -20,63 +20,165 @@ interface MitraAccount {
   totalOrders: number
 }
 
-type Preset = '1d' | '7d' | '30d' | 'month' | 'year' | 'custom'
-
-function getPresetRange(preset: Preset): { from: string; to: string } {
-  const now = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const fmt = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-  const today = fmt(now)
-
-  if (preset === '1d') return { from: today, to: today }
-  if (preset === '7d') {
-    const d = new Date(now); d.setDate(d.getDate() - 6)
-    return { from: fmt(d), to: today }
-  }
-  if (preset === '30d') {
-    const d = new Date(now); d.setDate(d.getDate() - 29)
-    return { from: fmt(d), to: today }
-  }
-  if (preset === 'month') {
-    return { from: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-01`, to: today }
-  }
-  if (preset === 'year') {
-    return { from: `${now.getFullYear()}-01-01`, to: today }
-  }
-  return { from: today, to: today }
-}
-
-const PRESETS: { key: Preset; label: string }[] = [
-  { key: '1d', label: 'Hari Ini' },
-  { key: '7d', label: '7 Hari' },
-  { key: '30d', label: '30 Hari' },
-  { key: 'month', label: 'Bulan Ini' },
-  { key: 'year', label: 'Tahun Ini' },
-  { key: 'custom', label: 'Custom' },
-]
-
 const ROLE_STYLE: Record<string, { label: string; bg: string; text: string }> = {
   admin:     { label: 'Admin',     bg: 'bg-red-100',    text: 'text-red-700' },
   reseller:  { label: 'Reseller',  bg: 'bg-purple-100', text: 'text-purple-700' },
   jastiper:  { label: 'Jastiper',  bg: 'bg-blue-100',   text: 'text-blue-700' },
 }
 
+const MONTHS_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
+const DAYS_ID = ['Min','Sen','Sel','Rab','Kam','Jum','Sab']
+
+function pad(n: number) { return String(n).padStart(2, '0') }
+function fmt(d: Date) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` }
+function today() { return fmt(new Date()) }
+
+const PRESETS = [
+  { label: 'Hari Ini',  range: () => { const t = today(); return { from: t, to: t } } },
+  { label: '7 Hari',    range: () => { const d = new Date(); d.setDate(d.getDate()-6); return { from: fmt(d), to: today() } } },
+  { label: '30 Hari',   range: () => { const d = new Date(); d.setDate(d.getDate()-29); return { from: fmt(d), to: today() } } },
+  { label: 'Bulan Ini', range: () => { const n = new Date(); return { from: `${n.getFullYear()}-${pad(n.getMonth()+1)}-01`, to: today() } } },
+  { label: 'Tahun Ini', range: () => { return { from: `${new Date().getFullYear()}-01-01`, to: today() } } },
+]
+
+function formatDisplayRange(from: string, to: string) {
+  if (!from || !to) return 'Pilih Periode'
+  const f = new Date(from), t = new Date(to)
+  const df = `${f.getDate()} ${MONTHS_ID[f.getMonth()].slice(0,3)} ${f.getFullYear()}`
+  const dt = `${t.getDate()} ${MONTHS_ID[t.getMonth()].slice(0,3)} ${t.getFullYear()}`
+  return from === to ? df : `${df} – ${dt}`
+}
+
+interface CalendarPickerProps {
+  from: string
+  to: string
+  onChange: (from: string, to: string) => void
+  onClose: () => void
+}
+function CalendarPicker({ from, to, onChange, onClose }: CalendarPickerProps) {
+  const now = new Date()
+  const [viewYear, setViewYear] = useState(from ? new Date(from).getFullYear() : now.getFullYear())
+  const [viewMonth, setViewMonth] = useState(from ? new Date(from).getMonth() : now.getMonth())
+  const [picking, setPicking] = useState<'from' | 'to'>('from')
+  const [tempFrom, setTempFrom] = useState(from)
+  const [tempTo, setTempTo] = useState(to)
+
+  const prevMonth = () => { if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y-1) } else setViewMonth(m => m-1) }
+  const nextMonth = () => { if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y+1) } else setViewMonth(m => m+1) }
+
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay()
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate()
+
+  const clickDay = (day: number) => {
+    const d = `${viewYear}-${pad(viewMonth+1)}-${pad(day)}`
+    if (picking === 'from') {
+      setTempFrom(d); setTempTo(''); setPicking('to')
+    } else {
+      if (d < tempFrom) { setTempFrom(d); setTempTo(tempFrom) }
+      else { setTempTo(d) }
+      setPicking('from')
+    }
+  }
+
+  const apply = () => {
+    if (tempFrom && tempTo) onChange(tempFrom, tempTo)
+    onClose()
+  }
+
+  const cells: (number | null)[] = [...Array(firstDay).fill(null), ...Array.from({length: daysInMonth}, (_, i) => i+1)]
+
+  return (
+    <div className="p-4 w-[300px]">
+      {/* Presets */}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {PRESETS.map(p => (
+          <button
+            key={p.label}
+            onClick={() => { const r = p.range(); setTempFrom(r.from); setTempTo(r.to); onChange(r.from, r.to); onClose() }}
+            className="rounded-full px-3 py-1 text-xs font-semibold bg-[#FFF8F0] text-gray-600 hover:bg-[#f0e8dc] transition border border-[#f0e8dc]"
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Month nav */}
+      <div className="flex items-center justify-between mb-3">
+        <button onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[#f0e8dc] transition"><ChevronLeft size={15} /></button>
+        <span className="text-sm font-semibold text-gray-800">{MONTHS_ID[viewMonth]} {viewYear}</span>
+        <button onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[#f0e8dc] transition"><ChevronRight size={15} /></button>
+      </div>
+
+      {/* Day headers */}
+      <div className="grid grid-cols-7 mb-1">
+        {DAYS_ID.map(d => <div key={d} className="text-center text-[10px] font-bold text-gray-400 py-1">{d}</div>)}
+      </div>
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-y-0.5">
+        {cells.map((day, i) => {
+          if (!day) return <div key={i} />
+          const d = `${viewYear}-${pad(viewMonth+1)}-${pad(day)}`
+          const isFrom = d === tempFrom
+          const isTo = d === tempTo
+          const inRange = tempFrom && tempTo && d > tempFrom && d < tempTo
+          return (
+            <button
+              key={i}
+              onClick={() => clickDay(day)}
+              className={`text-xs py-1.5 rounded-lg font-medium transition ${
+                isFrom || isTo ? 'bg-brand text-white' :
+                inRange ? 'bg-brand/10 text-brand' :
+                'hover:bg-[#f0e8dc] text-gray-700'
+              }`}
+            >
+              {day}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Range display */}
+      {(tempFrom || tempTo) && (
+        <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+          <input readOnly value={tempFrom} className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-center bg-[#FFF8F0] outline-none" placeholder="Dari" />
+          <span>–</span>
+          <input readOnly value={tempTo} className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-center bg-[#FFF8F0] outline-none" placeholder="Sampai" />
+        </div>
+      )}
+
+      {tempFrom && tempTo && (
+        <button onClick={apply} className="mt-3 w-full bg-brand text-white text-sm font-semibold py-2 rounded-xl hover:bg-brand-dark transition">
+          Terapkan
+        </button>
+      )}
+
+      <p className="mt-2 text-[10px] text-center text-gray-400">
+        {picking === 'from' ? 'Klik tanggal mulai' : 'Klik tanggal akhir'}
+      </p>
+    </div>
+  )
+}
+
 export default function AdminAccountsPage() {
   const router = useRouter()
   const [accounts, setAccounts] = useState<MitraAccount[]>([])
   const [loading, setLoading] = useState(true)
-  const [preset, setPreset] = useState<Preset>('30d')
-  const [customFrom, setCustomFrom] = useState('')
-  const [customTo, setCustomTo] = useState('')
+  const [rangeFrom, setRangeFrom] = useState(() => { const d = new Date(); d.setDate(d.getDate()-29); return fmt(d) })
+  const [rangeTo, setRangeTo] = useState(today)
+  const [calOpen, setCalOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const calRef = useRef<HTMLDivElement>(null)
 
-  const getRange = useCallback(() => {
-    if (preset === 'custom' && customFrom && customTo) {
-      return { from: customFrom, to: customTo }
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (calRef.current && !calRef.current.contains(e.target as Node)) setCalOpen(false)
     }
-    if (preset !== 'custom') return getPresetRange(preset)
-    return getPresetRange('30d')
-  }, [preset, customFrom, customTo])
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const getRange = useCallback(() => ({ from: rangeFrom, to: rangeTo }), [rangeFrom, rangeTo])
 
   useEffect(() => {
     const load = async () => {
@@ -128,44 +230,29 @@ export default function AdminAccountsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div>
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900">Akun Mitra</h1>
         <p className="text-sm text-gray-500 mt-0.5">Komisi & statistik per reseller / jastiper</p>
       </div>
 
       {/* Date filter */}
-      <div className="mb-4 bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Periode</p>
-        <div className="flex flex-wrap gap-2">
-          {PRESETS.map(p => (
-            <button
-              key={p.key}
-              onClick={() => setPreset(p.key)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-                preset === p.key
-                  ? 'bg-brand text-white shadow-sm'
-                  : 'bg-[#FFF8F0] text-gray-600 hover:bg-[#f0e8dc]'
-              }`}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-        {preset === 'custom' && (
-          <div className="mt-3 flex items-center gap-2 flex-wrap">
-            <input
-              type="date"
-              value={customFrom}
-              onChange={e => setCustomFrom(e.target.value)}
-              className="rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
-            />
-            <span className="text-gray-400 text-sm font-medium">–</span>
-            <input
-              type="date"
-              value={customTo}
-              onChange={e => setCustomTo(e.target.value)}
-              className="rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+      <div className="mb-4 relative" ref={calRef}>
+        <button
+          onClick={() => setCalOpen(v => !v)}
+          className="flex items-center gap-2 bg-white border border-gray-100 rounded-2xl px-4 py-2.5 shadow-sm hover:border-brand/30 transition w-full sm:w-auto"
+        >
+          <Calendar size={15} className="text-brand shrink-0" />
+          <span className="text-sm font-medium text-gray-700">{formatDisplayRange(rangeFrom, rangeTo)}</span>
+          <ChevronRight size={14} className={`text-gray-400 ml-auto transition-transform ${calOpen ? 'rotate-90' : ''}`} />
+        </button>
+        {calOpen && (
+          <div className="absolute top-full mt-2 left-0 z-50 bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden">
+            <CalendarPicker
+              from={rangeFrom}
+              to={rangeTo}
+              onChange={(f, t) => { setRangeFrom(f); setRangeTo(t) }}
+              onClose={() => setCalOpen(false)}
             />
           </div>
         )}
