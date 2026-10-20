@@ -93,6 +93,7 @@ export default function MitraDashboardPage() {
   const totalSales = commissions.length
   const totalEarned = commissions.reduce((s, c) => s + c.commission_amount, 0)
   const paidEarned = commissions.filter(c => c.status === 'paid').reduce((s, c) => s + c.commission_amount, 0)
+  const pendingEarned = totalEarned - paidEarned
   const currentTier = getCommissionTier(totalSales, tiers)
   const nextTier = tiers.find(t => t.min_sales > totalSales) ?? null
   const progressPct = currentTier && nextTier
@@ -123,49 +124,67 @@ export default function MitraDashboardPage() {
       {/* Content */}
       <div className="mx-auto max-w-lg space-y-4 px-4 py-5">
 
-        {/* Welcome */}
-        <div>
-          <p className="text-xs text-gray-400">Selamat datang,</p>
-          <div className="mt-0.5 flex items-center gap-2">
-            <h1 className="text-xl font-bold text-gray-900">{reseller?.full_name}</h1>
-            <span className="rounded-full bg-brand-light px-2 py-0.5 text-xs capitalize text-brand">
-              {reseller?.role ?? 'mitra'}
-            </span>
-          </div>
-        </div>
+        {/* Hero balance card */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand to-brand-dark p-5 text-white shadow-lg shadow-brand/25">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10" />
+          <div className="pointer-events-none absolute right-6 top-20 h-24 w-24 rounded-full bg-white/5" />
+          <div className="relative">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-xs text-white/70">Selamat datang,</p>
+                <h1 className="font-display text-xl font-semibold leading-tight">{reseller?.full_name}</h1>
+              </div>
+              <span className="rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold capitalize backdrop-blur-sm">
+                {reseller?.role ?? 'mitra'}
+              </span>
+            </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="rounded-lg bg-brand/10 p-1.5">
-                <TrendingUp className="h-4 w-4 text-brand" />
-              </span>
-              <p className="text-xs text-gray-500">Total Komisi</p>
+            <div className="mt-5">
+              <div className="flex items-center gap-1.5 text-white/70">
+                <TrendingUp className="h-3.5 w-3.5" />
+                <p className="text-xs">Total Komisi</p>
+              </div>
+              <p className="mt-1 text-3xl font-bold tracking-tight">{formatRupiah(totalEarned)}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
+                <span className="rounded-full bg-white/15 px-2.5 py-0.5 backdrop-blur-sm">
+                  Dibayar {formatRupiah(paidEarned)}
+                </span>
+                {pendingEarned > 0 && (
+                  <span className="rounded-full bg-amber-300/25 px-2.5 py-0.5 text-amber-50 backdrop-blur-sm">
+                    Belum dibayar {formatRupiah(pendingEarned)}
+                  </span>
+                )}
+              </div>
             </div>
-            <p className="text-lg font-bold text-brand">{formatRupiah(totalEarned)}</p>
-            <p className="text-[11px] text-gray-400 mt-0.5">Dibayar: {formatRupiah(paidEarned)}</p>
-          </div>
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="rounded-lg bg-gray-100 p-1.5">
-                <Package className="h-4 w-4 text-gray-500" />
-              </span>
-              <p className="text-xs text-gray-500">Total Order</p>
+
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-white/10 px-3.5 py-2.5 backdrop-blur-sm">
+                <div className="flex items-center gap-1.5 text-white/70">
+                  <Package className="h-3.5 w-3.5" />
+                  <p className="text-[11px]">Total Order</p>
+                </div>
+                <p className="mt-0.5 text-xl font-bold">{totalSales}</p>
+              </div>
+              <div className="rounded-2xl bg-white/10 px-3.5 py-2.5 backdrop-blur-sm">
+                <div className="flex items-center gap-1.5 text-white/70">
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  <p className="text-[11px]">Tier Saat Ini</p>
+                </div>
+                <p className="mt-0.5 text-xl font-bold">{currentTier?.label ?? '—'}</p>
+              </div>
             </div>
-            <p className="text-lg font-bold text-gray-900">{totalSales}</p>
           </div>
         </div>
 
         {/* Referral Link */}
         {referralLink && (
-          <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="rounded-lg bg-brand/10 p-1.5">
+          <div className="rounded-3xl border border-[#f0e8dc] bg-white p-4 shadow-soft">
+            <div className="mb-3 flex items-center gap-2.5">
+              <span className="rounded-xl bg-brand-light p-2">
                 <Link2 className="h-4 w-4 text-brand" />
               </span>
               <div>
-                <p className="text-sm font-semibold text-gray-900">Link Referral Kamu</p>
+                <p className="text-sm font-bold text-gray-900">Link Referral Kamu</p>
                 <p className="text-xs text-gray-400">Sebar link ini — order dari link ini masuk ke kamu</p>
               </div>
             </div>
@@ -174,11 +193,11 @@ export default function MitraDashboardPage() {
                 readOnly
                 value={referralLink}
                 onFocus={e => e.target.select()}
-                className="flex-1 min-w-0 rounded-xl border border-gray-200 bg-[#FFF8F0] px-3 py-2 text-xs text-gray-600 outline-none"
+                className="flex-1 min-w-0 rounded-xl border border-dashed border-brand/30 bg-brand-light/40 px-3 py-2.5 text-xs font-medium text-brand/90 outline-none"
               />
               <button
                 onClick={copyLink}
-                className="flex shrink-0 items-center gap-1.5 rounded-xl bg-brand px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-dark"
+                className="flex shrink-0 items-center gap-1.5 rounded-xl bg-brand px-3.5 py-2.5 text-xs font-bold text-white transition hover:bg-brand-dark active:scale-[0.97] shadow-sm shadow-brand/20"
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
                 {copied ? 'Tersalin' : 'Salin'}
@@ -189,40 +208,40 @@ export default function MitraDashboardPage() {
 
         {/* Tier Card */}
         {currentTier && (
-          <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="rounded-3xl border border-[#f0e8dc] bg-white p-5 shadow-soft">
             <div className="mb-3 flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500">Tier Saat Ini</p>
-                <p className="font-semibold text-gray-900">{currentTier.label}</p>
+                <p className="text-xs text-gray-400">Tier Saat Ini</p>
+                <p className="font-display text-lg font-semibold text-gray-900">{currentTier.label}</p>
               </div>
-              <span className="rounded-full bg-brand-light px-3 py-1 text-xs font-semibold text-brand">
+              <span className="rounded-full bg-gradient-to-br from-brand to-brand-dark px-3 py-1 text-xs font-bold text-white shadow-sm shadow-brand/20">
                 {currentTier.type === 'percent' ? `${currentTier.value}%` : formatRupiah(currentTier.value)}
               </span>
             </div>
             {nextTier && (
               <>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                <div className="h-2.5 w-full overflow-hidden rounded-full bg-brand-light">
                   <div
-                    className="h-full rounded-full bg-brand transition-all"
-                    style={{ width: `${progressPct}%` }}
+                    className="h-full rounded-full bg-gradient-to-r from-brand to-brand-dark transition-all duration-500"
+                    style={{ width: `${Math.max(progressPct, 4)}%` }}
                   />
                 </div>
-                <p className="mt-2 text-xs text-gray-500">
-                  {totalSales} dari {nextTier.min_sales} order untuk tier berikutnya: <strong>{nextTier.label}</strong>
+                <p className="mt-2.5 text-xs text-gray-500">
+                  <strong className="text-gray-700">{totalSales}</strong> dari {nextTier.min_sales} order menuju <strong className="text-brand">{nextTier.label}</strong>
                 </p>
               </>
             )}
             {!nextTier && (
-              <p className="text-xs text-gray-500">Anda berada di tier tertinggi!</p>
+              <p className="text-xs text-gray-500">🎉 Kamu di tier tertinggi!</p>
             )}
           </div>
         )}
 
         {/* Commission History */}
-        <div className="rounded-2xl bg-white shadow-sm">
-          <div className="flex items-center gap-2 border-b border-gray-100 px-5 py-4">
-            <Clock className="h-4 w-4 text-gray-400" />
-            <h2 className="font-semibold text-gray-900">Riwayat Komisi</h2>
+        <div className="rounded-3xl border border-[#f0e8dc] bg-white shadow-soft overflow-hidden">
+          <div className="flex items-center gap-2 border-b border-gray-50 px-5 py-4">
+            <Clock className="h-4 w-4 text-brand" />
+            <h2 className="font-display text-base font-semibold text-gray-900">Riwayat Komisi</h2>
           </div>
           {commissions.length === 0 ? (
             <div className="flex flex-col items-center py-12 text-center">
