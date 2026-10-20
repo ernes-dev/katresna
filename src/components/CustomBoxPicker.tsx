@@ -65,35 +65,35 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
         className="fixed inset-0 bg-black/50 z-[60]"
         onClick={onClose}
       />
-      <div className={`fixed ${totalItems() > 0 ? 'bottom-[72px]' : 'bottom-0'} left-0 right-0 z-[70] bg-white rounded-t-3xl shadow-2xl max-w-lg mx-auto max-h-[80vh] flex flex-col`}>
+      <div className={`fixed ${totalItems() > 0 ? 'bottom-[72px]' : 'bottom-0'} left-0 right-0 z-[70] bg-[#FFF8F0] rounded-t-3xl shadow-float max-w-lg mx-auto max-h-[80vh] flex flex-col border-t border-[#f0e8dc]`}>
         {/* Header */}
         <div className="flex items-center gap-3 p-5 pb-3 flex-shrink-0">
           {product.image_url && (
-            <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+            <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ring-1 ring-[#f0e8dc]">
               <Image src={product.image_url} alt={product.name} fill className="object-cover" />
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-gray-900">{product.name}</h3>
+            <h3 className="font-display text-lg font-semibold text-gray-900">{product.name}</h3>
             <p className="text-xs text-gray-400">Pilih kemasan & isian</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl transition flex-shrink-0">
+          <button onClick={onClose} className="p-2 rounded-xl border border-gray-200 bg-white transition hover:border-brand/30 hover:text-brand active:scale-[0.97] flex-shrink-0">
             <X size={18} className="text-gray-500" />
           </button>
         </div>
 
         {/* Variant selector */}
         <div className="px-5 pb-3 flex-shrink-0">
-          <p className="text-xs font-semibold text-gray-500 mb-2">PILIH KEMASAN</p>
+          <p className="text-[11px] font-semibold tracking-wide text-gray-500 mb-2">PILIH KEMASAN</p>
           <div className="flex gap-2">
             {variants.map(v => (
               <button
                 key={v.name}
                 onClick={() => { setSelectedVariant(v); setSelections({}) }}
-                className={`flex-1 py-2.5 px-3 rounded-xl border-2 text-sm font-semibold transition ${
+                className={`flex-1 py-2.5 px-3 rounded-xl border-2 text-sm font-semibold transition active:scale-[0.97] ${
                   selectedVariant?.name === v.name
-                    ? 'border-brand bg-brand-light text-brand'
-                    : 'border-gray-200 text-gray-600'
+                    ? 'border-brand bg-brand-light text-brand shadow-sm shadow-brand/10'
+                    : 'border-gray-200 bg-white text-gray-600 hover:border-brand/30'
                 }`}
               >
                 {v.name}
@@ -107,9 +107,9 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
           <>
             <div className="px-5 pb-2 flex-shrink-0">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold text-gray-500">PILIH ISIAN BOLEN</p>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                  totalSelected >= maxItems ? 'bg-brand text-white' : 'bg-gray-100 text-gray-500'
+                <p className="text-[11px] font-semibold tracking-wide text-gray-500">PILIH ISIAN BOLEN</p>
+                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full transition ${
+                  totalSelected >= maxItems ? 'bg-brand text-white shadow-sm shadow-brand/20' : 'bg-brand-light text-brand'
                 }`}>
                   {totalSelected}/{maxItems}
                 </span>
@@ -133,11 +133,11 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
                       <div
                         key={item.id}
                         className={`flex items-center gap-3 p-3 rounded-xl border transition ${
-                          qty > 0 ? 'border-brand bg-brand-light/40' : 'border-gray-100 bg-gray-50'
+                          qty > 0 ? 'border-brand bg-brand-light/60 shadow-sm shadow-brand/5' : 'border-[#f0e8dc] bg-white'
                         } ${atMax ? 'opacity-40' : ''}`}
                       >
                         {item.image_url && (
-                          <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                          <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-[#f0e8dc]">
                             <Image src={item.image_url} alt={item.name} fill className="object-cover" />
                           </div>
                         )}
@@ -149,12 +149,12 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
                           <button
                             onClick={() => adjust(item, 1)}
                             disabled={atMax}
-                            className="bg-brand text-white rounded-full p-1.5 hover:bg-brand-dark transition disabled:opacity-30"
+                            className="bg-brand text-white rounded-full p-1.5 shadow-sm shadow-brand/20 transition hover:bg-brand-dark active:scale-[0.97] disabled:opacity-30"
                           >
                             <Plus size={14} strokeWidth={2.5} />
                           </button>
                         ) : (
-                          <div className="flex items-center gap-1.5 bg-brand rounded-full px-1.5 py-1.5">
+                          <div className="flex items-center gap-1.5 bg-brand rounded-full px-1.5 py-1.5 shadow-sm shadow-brand/20">
                             <button onClick={() => adjust(item, -1)} className="text-white hover:bg-white/20 rounded-full p-0.5 transition">
                               <Minus size={13} strokeWidth={2.5} />
                             </button>
@@ -178,11 +178,11 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
         )}
 
         {/* Footer */}
-        <div className="p-5 pt-3 flex-shrink-0 border-t border-gray-100">
+        <div className="p-5 pt-3 flex-shrink-0 border-t border-[#f0e8dc] bg-white">
           <button
             onClick={handleAdd}
             disabled={!selectedVariant || totalSelected === 0}
-            className="w-full bg-brand text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-brand-dark transition disabled:opacity-40 flex items-center justify-center gap-2"
+            className="w-full bg-brand text-white py-3.5 rounded-xl font-semibold text-sm shadow-sm shadow-brand/20 transition hover:bg-brand-dark active:scale-[0.97] disabled:opacity-40 flex items-center justify-center gap-2"
           >
             <ShoppingBag size={16} />
             {selectedVariant && totalSelected > 0

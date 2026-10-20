@@ -41,7 +41,7 @@ export default async function HomePage() {
         <StoreHeroCarousel banners={(banners as Banner[]) || []} />
 
         {/* Store info strip */}
-        <div className="mt-3 bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100">
+        <div className="mt-3 bg-white rounded-3xl px-4 py-3 shadow-soft border border-[#f0e8dc]">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className={`shrink-0 flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
-import { Shield, Banknote } from 'lucide-react'
+import { Shield, Banknote, Clock, RefreshCw, LogOut } from 'lucide-react'
 
 function StatusBadge({ status }: { status: string }) {
   if (status === 'approved') {
@@ -91,32 +91,38 @@ export default function MitraPendingPage() {
           unoptimized
         />
 
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
-          <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-amber-50 border-2 border-amber-100 flex items-center justify-center">
-            <svg className="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 to-amber-500 p-6 text-center text-white shadow-float">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10" />
+          <div className="pointer-events-none absolute -left-6 bottom-0 h-24 w-24 rounded-full bg-white/5" />
+          <div className="relative">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+              <Clock className="h-8 w-8" />
+            </div>
+            <h1 className="font-display text-xl font-semibold">Menunggu Verifikasi</h1>
+            <p className="mt-1 text-sm text-white/85">
+              Akun Anda sedang diverifikasi admin. Proses 1x24 jam.
+            </p>
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-1">Menunggu Verifikasi</h1>
-          <p className="text-sm text-gray-500">
-            Akun Anda sedang diverifikasi admin. Proses 1x24 jam.
-          </p>
         </div>
 
         {reseller && (
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Status Verifikasi</h2>
+          <div className="rounded-3xl border border-[#f0e8dc] bg-white p-5 shadow-soft">
+            <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">Status Verifikasi</h2>
             <div className="space-y-3">
-              <div className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
-                <span className="flex items-center gap-2 text-sm text-gray-600">
-                  <Shield className="h-4 w-4 text-gray-400" />
+              <div className="flex items-center justify-between rounded-2xl bg-[#FFF8F0] px-4 py-3">
+                <span className="flex items-center gap-2.5 text-sm text-gray-600">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light">
+                    <Shield className="h-4 w-4 text-brand" />
+                  </span>
                   Verifikasi KTP
                 </span>
                 <StatusBadge status={reseller.kyc_status} />
               </div>
-              <div className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
-                <span className="flex items-center gap-2 text-sm text-gray-600">
-                  <Banknote className="h-4 w-4 text-gray-400" />
+              <div className="flex items-center justify-between rounded-2xl bg-[#FFF8F0] px-4 py-3">
+                <span className="flex items-center gap-2.5 text-sm text-gray-600">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light">
+                    <Banknote className="h-4 w-4 text-brand" />
+                  </span>
                   Verifikasi Rekening
                 </span>
                 <StatusBadge status={reseller.bank_status} />
@@ -124,12 +130,12 @@ export default function MitraPendingPage() {
             </div>
 
             {reseller.kyc_status === 'rejected' && reseller.kyc_notes && (
-              <div className="mt-4 rounded-xl bg-red-50 p-3">
-                <p className="text-xs font-medium text-red-700">Catatan KYC:</p>
+              <div className="mt-4 rounded-2xl border border-red-100 bg-red-50 p-3">
+                <p className="text-xs font-semibold text-red-700">Catatan KYC:</p>
                 <p className="mt-1 text-xs text-red-600">{reseller.kyc_notes}</p>
                 <button
                   onClick={() => router.push('/mitra/kyc')}
-                  className="mt-3 w-full rounded-xl bg-brand py-2 text-xs font-semibold text-white"
+                  className="mt-3 w-full rounded-xl bg-brand py-2 text-xs font-semibold text-white shadow-sm shadow-brand/20 transition hover:bg-brand-dark active:scale-[0.97]"
                 >
                   Upload Ulang KTP
                 </button>
@@ -141,14 +147,16 @@ export default function MitraPendingPage() {
         <div className="space-y-2">
           <button
             onClick={checkStatus}
-            className="w-full rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition hover:border-brand/30 hover:text-brand active:scale-[0.97]"
           >
+            <RefreshCw className="h-4 w-4" />
             Perbarui Status
           </button>
           <button
             onClick={handleLogout}
-            className="w-full rounded-xl py-2.5 text-sm font-medium text-gray-400 transition hover:text-gray-600"
+            className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium text-gray-400 transition hover:text-gray-600"
           >
+            <LogOut className="h-4 w-4" />
             Keluar
           </button>
         </div>

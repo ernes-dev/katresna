@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cream px-4">
-      <div className="bg-white rounded-2xl shadow-sm p-8 w-full max-w-sm">
+      <div className="bg-white rounded-3xl border border-[#f0e8dc] shadow-soft p-8 w-full max-w-sm">
         <div className="flex justify-center mb-2">
           <Image
             src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
@@ -39,7 +39,8 @@ export default function AdminLoginPage() {
             unoptimized
           />
         </div>
-        <p className="text-gray-500 text-center text-sm mb-8">Dashboard Seller</p>
+        <p className="font-display text-center text-lg font-semibold text-gray-900">Dashboard Seller</p>
+        <p className="text-gray-400 text-center text-sm mb-8 mt-0.5">Masuk untuk mengelola toko</p>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
@@ -50,7 +51,7 @@ export default function AdminLoginPage() {
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="seller@katresna.com"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
             />
           </div>
 
@@ -62,7 +63,7 @@ export default function AdminLoginPage() {
               onChange={e => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
             />
           </div>
 
@@ -75,7 +76,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-brand text-white py-3 rounded-xl font-semibold hover:bg-brand-dark transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-brand text-white py-3 rounded-xl font-semibold hover:bg-brand-dark active:scale-[0.97] transition shadow-sm shadow-brand/20 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <Loader2 size={18} className="animate-spin" />}
             Masuk

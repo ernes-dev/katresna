@@ -37,11 +37,11 @@ export default function MitraAdminLayout({ children }: { children: React.ReactNo
           href={href}
           onClick={onClickItem}
           title={collapsed ? label : undefined}
-          className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+          className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition active:scale-[0.98] ${
             collapsed ? 'justify-center' : ''
           } ${
             isActive(href, exact)
-              ? 'bg-brand text-white shadow-sm'
+              ? 'bg-gradient-to-br from-brand to-brand-dark text-white shadow-sm shadow-brand/25'
               : 'text-gray-600 hover:bg-[#f0e8dc] hover:text-gray-900'
           }`}
         >
@@ -103,7 +103,7 @@ export default function MitraAdminLayout({ children }: { children: React.ReactNo
           <button
             onClick={handleLogout}
             title={collapsed ? 'Keluar' : undefined}
-            className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors ${
+            className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition active:scale-[0.98] ${
               collapsed ? 'justify-center' : ''
             }`}
           >
@@ -155,7 +155,7 @@ export default function MitraAdminLayout({ children }: { children: React.ReactNo
         <div className="px-2 py-4 border-t border-[#f0e8dc]">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition active:scale-[0.98]"
           >
             <LogOut size={17} className="shrink-0" />
             Keluar

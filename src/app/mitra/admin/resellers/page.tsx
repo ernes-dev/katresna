@@ -90,7 +90,7 @@ export default function AdminResellersPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Kelola Mitra</h1>
+        <h1 className="font-display text-2xl font-semibold text-gray-900">Kelola Mitra</h1>
         <p className="text-sm text-gray-500 mt-0.5">Approve dan kelola reseller &amp; jastiper</p>
       </div>
 
@@ -100,10 +100,10 @@ export default function AdminResellersPage() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition active:scale-[0.97] ${
               tab === t.key
-                ? 'bg-brand text-white shadow-sm'
-                : 'bg-white text-gray-600 hover:bg-[#f0e8dc] border border-gray-100'
+                ? 'bg-gradient-to-br from-brand to-brand-dark text-white shadow-sm shadow-brand/25'
+                : 'bg-white text-gray-600 hover:text-brand hover:border-brand/30 border border-[#f0e8dc]'
             }`}
           >
             {t.label}
@@ -111,7 +111,7 @@ export default function AdminResellersPage() {
         ))}
       </div>
 
-      <div className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
+      <div className="rounded-3xl bg-white shadow-soft border border-[#f0e8dc] overflow-hidden">
         {filtered.length === 0 ? (
           <div className="py-10 text-center text-sm text-gray-400">Tidak ada data</div>
         ) : (
@@ -141,7 +141,7 @@ export default function AdminResellersPage() {
                     <td className="px-4 py-3 text-right">
                       <Link
                         href={`/mitra/admin/resellers/${r.id}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-brand hover:text-brand-dark transition"
+                        className="inline-flex items-center gap-1 rounded-full border border-[#f0e8dc] bg-white px-3 py-1 text-xs font-semibold text-brand transition hover:border-brand/30 hover:bg-brand-light active:scale-[0.97]"
                       >
                         Detail
                         <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

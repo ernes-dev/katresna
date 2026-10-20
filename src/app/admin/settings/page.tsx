@@ -8,8 +8,8 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Pengaturan Toko</h1>
-      <div className="bg-white rounded-2xl p-6 shadow-sm max-w-2xl">
+      <h1 className="font-display text-2xl font-semibold text-gray-900 mb-6">Pengaturan Toko</h1>
+      <div className="bg-white rounded-3xl p-6 border border-[#f0e8dc] shadow-soft max-w-2xl">
         <SettingsForm initialData={settings} />
       </div>
     </div>

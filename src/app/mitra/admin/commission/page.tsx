@@ -112,13 +112,13 @@ export default function AdminCommissionPage() {
     onCancel: () => void
     saveLabel: string
   }) => (
-    <div className="mt-3 space-y-3 rounded-xl bg-gray-50 p-4">
+    <div className="mt-4 space-y-3 rounded-2xl border border-[#f0e8dc] bg-[#FFF8F0] p-4">
       <div>
         <label className="mb-1 block text-xs font-medium text-gray-600">Nama Tier</label>
         <input
           value={data.label}
           onChange={e => onChange({ ...data, label: e.target.value })}
-          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand"
+          className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
           placeholder="Contoh: Silver, Gold"
         />
       </div>
@@ -130,7 +130,7 @@ export default function AdminCommissionPage() {
             min={0}
             value={data.min_sales}
             onChange={e => onChange({ ...data, min_sales: Number(e.target.value) })}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
           />
         </div>
         <div>
@@ -140,7 +140,7 @@ export default function AdminCommissionPage() {
             min={0}
             value={data.max_sales ?? ''}
             onChange={e => onChange({ ...data, max_sales: e.target.value === '' ? null : Number(e.target.value) })}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
             placeholder="Kosong = tak terbatas"
           />
         </div>
@@ -151,7 +151,7 @@ export default function AdminCommissionPage() {
           <select
             value={data.type}
             onChange={e => onChange({ ...data, type: e.target.value as 'percent' | 'fixed' })}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
           >
             <option value="percent">Persentase (%)</option>
             <option value="fixed">Nominal (Rp)</option>
@@ -166,7 +166,7 @@ export default function AdminCommissionPage() {
             min={0}
             value={data.value}
             onChange={e => onChange({ ...data, value: Number(e.target.value) })}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
           />
         </div>
       </div>
@@ -174,13 +174,13 @@ export default function AdminCommissionPage() {
         <button
           disabled={saving}
           onClick={onSave}
-          className="flex-1 rounded-xl bg-brand py-2 text-xs font-semibold text-white transition hover:bg-brand-dark disabled:opacity-50"
+          className="flex-1 rounded-xl bg-brand py-2.5 text-xs font-semibold text-white transition hover:bg-brand-dark active:scale-[0.97] shadow-sm shadow-brand/20 disabled:opacity-50 disabled:active:scale-100"
         >
           {saving ? 'Menyimpan...' : saveLabel}
         </button>
         <button
           onClick={onCancel}
-          className="rounded-xl border border-gray-200 px-4 py-2 text-xs text-gray-600 transition hover:bg-gray-50"
+          className="rounded-xl border border-gray-200 px-4 py-2.5 text-xs font-medium text-gray-600 transition hover:border-brand/30 hover:text-brand active:scale-[0.97]"
         >
           Batal
         </button>
@@ -192,37 +192,41 @@ export default function AdminCommissionPage() {
     <div className="min-h-screen px-4 py-8">
       <div className="mx-auto max-w-lg">
         <div className="mb-6 flex items-center gap-3">
-          <Link href="/mitra/admin" className="text-gray-400 hover:text-gray-600">
+          <Link href="/mitra/admin" className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#f0e8dc] bg-white text-gray-500 transition hover:border-brand/30 hover:text-brand active:scale-[0.97]">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <h1 className="text-xl font-bold text-gray-900">Tier Komisi</h1>
+          <h1 className="font-display text-2xl font-semibold text-gray-900">Tier Komisi</h1>
         </div>
 
         <div className="space-y-3">
           {tiers.map(tier => (
-            <div key={tier.id} className="rounded-2xl bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-gray-900">{tier.label}</p>
-                  <p className="text-xs text-gray-500">
-                    {tier.min_sales} – {tier.max_sales ?? '∞'} order ·{' '}
-                    {tier.type === 'percent'
-                      ? `${tier.value}%`
-                      : `Rp${tier.value.toLocaleString('id-ID')}`}
+            <div key={tier.id} className="rounded-3xl border border-[#f0e8dc] bg-white p-5 shadow-soft">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-display text-base font-semibold text-gray-900">{tier.label}</p>
+                    <span className="rounded-full bg-gradient-to-br from-brand to-brand-dark px-2.5 py-0.5 text-xs font-bold text-white shadow-sm shadow-brand/20">
+                      {tier.type === 'percent'
+                        ? `${tier.value}%`
+                        : `Rp${tier.value.toLocaleString('id-ID')}`}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    {tier.min_sales} – {tier.max_sales ?? '∞'} order
                   </p>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex shrink-0 gap-1">
                   <button
                     onClick={() => startEdit(tier)}
-                    className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-brand transition hover:bg-brand-light"
+                    className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-brand transition hover:bg-brand-light active:scale-[0.97]"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteTier(tier.id)}
-                    className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-500 transition hover:bg-red-50"
+                    className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-red-500 transition hover:bg-red-50 active:scale-[0.97]"
                   >
                     Hapus
                   </button>
@@ -245,13 +249,13 @@ export default function AdminCommissionPage() {
           {!showAdd ? (
             <button
               onClick={() => setShowAdd(true)}
-              className="w-full rounded-2xl border-2 border-dashed border-gray-200 py-3 text-sm font-medium text-gray-500 transition hover:border-brand hover:text-brand"
+              className="w-full rounded-2xl border-2 border-dashed border-[#e4d8c8] py-3 text-sm font-semibold text-gray-500 transition hover:border-brand hover:text-brand hover:bg-brand-light/40 active:scale-[0.99]"
             >
               + Tambah Tier Baru
             </button>
           ) : (
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <p className="font-semibold text-gray-900">Tier Baru</p>
+            <div className="rounded-3xl border border-[#f0e8dc] bg-white p-5 shadow-soft">
+              <p className="font-display text-base font-semibold text-gray-900">Tier Baru</p>
               <TierForm
                 data={newTier}
                 onChange={setNewTier}

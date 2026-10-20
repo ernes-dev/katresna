@@ -75,7 +75,7 @@ export default function CustomerMenu({
 
       {/* Section title */}
       <div className="flex items-center justify-between mb-3">
-        <h2 className="font-bold text-gray-900 text-base">Menu</h2>
+        <h2 className="font-display text-xl font-semibold text-gray-900">Menu</h2>
         <span className="text-xs text-gray-400">{products.length} item tersedia</span>
       </div>
 
@@ -121,9 +121,9 @@ export default function CustomerMenu({
                   onClick={() => setActiveCategory(cat.id)}
                   className="flex items-center gap-2 mb-3 group"
                 >
-                  <h3 className="font-bold text-gray-800 text-sm">{cat.name}</h3>
+                  <h3 className="font-display text-lg font-semibold text-gray-800 capitalize">{cat.name}</h3>
                   <span className="text-xs text-gray-400">({items.length})</span>
-                  <span className="text-xs text-brand font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Lihat semua</span>
+                  <span className="text-xs text-brand font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Lihat semua →</span>
                 </button>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {items.map(product => (

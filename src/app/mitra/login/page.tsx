@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { Mail, Lock, LogIn } from 'lucide-react'
 
 export default function MitraLoginPage() {
   const router = useRouter()
@@ -63,7 +64,7 @@ export default function MitraLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#FFF8F0] px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Image
@@ -76,42 +77,51 @@ export default function MitraLoginPage() {
           />
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <h2 className="mb-6 text-lg font-semibold text-gray-800">Masuk ke Akun Mitra</h2>
+        <div className="rounded-3xl border border-[#f0e8dc] bg-white p-6 shadow-soft">
+          <div className="mb-6">
+            <h2 className="font-display text-xl font-semibold text-gray-900">Masuk ke Akun Mitra</h2>
+            <p className="mt-1 text-sm text-gray-400">Selamat datang kembali, silakan masuk</p>
+          </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
-                placeholder="email@contoh.com"
-              />
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">Email</label>
+              <div className="relative">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-300" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 py-2.5 pl-9 pr-3 text-sm outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
+                  placeholder="email@contoh.com"
+                />
+              </div>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Password</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
-                placeholder="••••••••"
-              />
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">Password</label>
+              <div className="relative">
+                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-300" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 py-2.5 pl-9 pr-3 text-sm outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-brand py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 text-sm font-semibold text-white shadow-sm shadow-brand/20 transition hover:bg-brand-dark active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
             >
-              {loading ? 'Memproses...' : 'Masuk'}
+              {loading ? 'Memproses...' : <>Masuk <LogIn className="h-4 w-4" /></>}
             </button>
           </form>
         </div>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <p className="mt-5 text-center text-sm text-gray-500">
           Belum punya akun?{' '}
           <Link href="/mitra/register" className="font-semibold text-brand hover:underline">
             Daftar Mitra

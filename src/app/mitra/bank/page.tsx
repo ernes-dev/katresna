@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
+import { Info, Send } from 'lucide-react'
 
 const BANK_OPTIONS = [
   'BCA', 'BRI', 'BNI', 'Mandiri', 'BSI',
@@ -91,25 +92,30 @@ export default function MitraBankPage() {
         <Image src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi" className="mx-auto h-12 w-auto object-contain" unoptimized alt="Katresna" width={120} height={48} />
 
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-1.5 rounded-full bg-brand" />
-          <div className="flex-1 h-1.5 rounded-full bg-brand" />
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-brand-light">
+            <div className="h-full w-full rounded-full bg-gradient-to-r from-brand to-brand-dark" />
+          </div>
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-brand-light">
+            <div className="h-full w-full rounded-full bg-gradient-to-r from-brand to-brand-dark" />
+          </div>
         </div>
-        <p className="text-xs text-gray-400 text-center">Langkah 2 dari 2 — Data Rekening</p>
+        <p className="text-center text-xs font-medium text-gray-400">Langkah 2 dari 2 — Data Rekening</p>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
-          <div className="mb-5 rounded-xl bg-brand-light p-4">
-            <p className="text-xs text-brand">
+        <div className="rounded-3xl border border-[#f0e8dc] bg-white p-6 shadow-soft">
+          <div className="mb-5 flex items-start gap-3 rounded-2xl bg-brand-light p-4">
+            <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+            <p className="text-xs leading-relaxed text-brand/90">
               Nama pemilik rekening harus sesuai dengan nama yang tertera di KTP.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Nama Bank / E-Wallet</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">Nama Bank / E-Wallet</label>
               <select
                 value={bankName}
                 onChange={e => setBankName(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
               >
                 {BANK_OPTIONS.map(b => (
                   <option key={b} value={b}>{b}</option>
@@ -117,33 +123,33 @@ export default function MitraBankPage() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Nomor Rekening / Nomor HP</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">Nomor Rekening / Nomor HP</label>
               <input
                 type="text"
                 required
                 value={bankAccount}
                 onChange={e => setBankAccount(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
                 placeholder="Nomor rekening atau nomor HP"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Nama Pemilik Rekening</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">Nama Pemilik Rekening</label>
               <input
                 type="text"
                 required
                 value={bankHolder}
                 onChange={e => setBankHolder(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
                 placeholder="Harus sesuai KTP"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-brand py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 text-sm font-semibold text-white shadow-sm shadow-brand/20 transition hover:bg-brand-dark active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
             >
-              {loading ? 'Menyimpan...' : 'Kirim Pendaftaran'}
+              {loading ? 'Menyimpan...' : <>Kirim Pendaftaran <Send className="h-4 w-4" /></>}
             </button>
           </form>
         </div>

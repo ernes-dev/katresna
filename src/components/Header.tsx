@@ -27,12 +27,12 @@ export default function Header() {
 
         <Link
           href="/cart"
-          className="relative flex items-center gap-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 px-3 py-2 rounded-full text-sm font-medium transition-colors"
+          className="relative flex items-center gap-1.5 bg-white hover:bg-brand-light/50 border border-[#f0e8dc] text-gray-700 px-3.5 py-2 rounded-full text-sm font-semibold transition-colors shadow-soft active:scale-[0.97]"
         >
           <ShoppingCart size={16} className={count > 0 ? 'text-brand' : 'text-gray-500'} />
           <span>Keranjang</span>
           {count > 0 && (
-            <span className="bg-brand text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center px-1 font-bold">
+            <span className="bg-brand text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center px-1 font-bold shadow-sm shadow-brand/30">
               {count > 9 ? '9+' : count}
             </span>
           )}

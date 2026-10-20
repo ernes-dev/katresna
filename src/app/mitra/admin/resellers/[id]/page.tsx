@@ -123,17 +123,17 @@ export default function ResellerDetailPage() {
     <div className="min-h-screen px-4 py-8">
       <div className="mx-auto max-w-lg">
         <div className="mb-6 flex items-center gap-3">
-          <Link href="/mitra/admin/resellers" className="text-gray-400 hover:text-gray-600">
+          <Link href="/mitra/admin/resellers" className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#f0e8dc] bg-white text-gray-500 transition hover:border-brand/30 hover:text-brand active:scale-[0.97]">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <h1 className="text-xl font-bold text-gray-900">Detail Reseller</h1>
+          <h1 className="font-display text-2xl font-semibold text-gray-900">Detail Reseller</h1>
         </div>
 
         {/* Profile Card */}
-        <div className="mb-4 rounded-2xl bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-gray-700">Informasi Pribadi</h2>
+        <div className="mb-4 rounded-3xl border border-[#f0e8dc] bg-white p-5 shadow-soft">
+          <h2 className="mb-3 font-display text-base font-semibold text-gray-900">Informasi Pribadi</h2>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-500">Nama</span>
@@ -155,14 +155,14 @@ export default function ResellerDetailPage() {
         </div>
 
         {/* KYC Card */}
-        <div className="mb-4 rounded-2xl bg-white p-5 shadow-sm">
+        <div className="mb-4 rounded-3xl border border-[#f0e8dc] bg-white p-5 shadow-soft">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700">Verifikasi KTP</h2>
+            <h2 className="font-display text-base font-semibold text-gray-900">Verifikasi KTP</h2>
             <StatusBadge status={reseller.kyc_status} />
           </div>
 
           {kycPhotoUrl ? (
-            <div className="mb-4 overflow-hidden rounded-xl border border-gray-100">
+            <div className="mb-4 overflow-hidden rounded-2xl border border-[#f0e8dc]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={kycPhotoUrl} alt="KTP" className="w-full object-cover" />
             </div>
@@ -171,7 +171,7 @@ export default function ResellerDetailPage() {
           )}
 
           {reseller.kyc_notes && (
-            <div className="mb-3 rounded-xl bg-gray-50 px-3 py-2 text-xs text-gray-600">
+            <div className="mb-3 rounded-xl bg-[#FFF8F0] border border-[#f0e8dc] px-3 py-2 text-xs text-gray-600">
               <span className="font-medium">Catatan:</span> {reseller.kyc_notes}
             </div>
           )}
@@ -180,14 +180,14 @@ export default function ResellerDetailPage() {
             <button
               disabled={actionLoading || reseller.kyc_status === 'approved'}
               onClick={() => doUpdate({ kyc_status: 'approved', kyc_notes: null })}
-              className="flex-1 rounded-xl bg-green-600 py-2 text-xs font-semibold text-white transition hover:bg-green-700 disabled:opacity-50"
+              className="flex-1 rounded-xl bg-green-600 py-2.5 text-xs font-semibold text-white transition hover:bg-green-700 active:scale-[0.97] shadow-sm shadow-green-600/20 disabled:opacity-50 disabled:active:scale-100"
             >
               Setujui KYC
             </button>
             <button
               disabled={actionLoading}
               onClick={() => setShowRejectKyc(v => !v)}
-              className="flex-1 rounded-xl bg-red-50 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100"
+              className="flex-1 rounded-xl bg-red-50 py-2.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 active:scale-[0.97]"
             >
               Tolak KYC
             </button>
@@ -200,7 +200,7 @@ export default function ResellerDetailPage() {
                 onChange={e => setRejectNotes(e.target.value)}
                 placeholder="Alasan penolakan..."
                 rows={2}
-                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs outline-none focus:border-brand"
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs outline-none focus:border-brand focus:ring-1 focus:ring-brand"
               />
               <button
                 disabled={actionLoading}
@@ -208,7 +208,7 @@ export default function ResellerDetailPage() {
                   doUpdate({ kyc_status: 'rejected', kyc_notes: rejectNotes })
                   setShowRejectKyc(false)
                 }}
-                className="w-full rounded-xl bg-red-600 py-2 text-xs font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+                className="w-full rounded-xl bg-red-600 py-2.5 text-xs font-semibold text-white transition hover:bg-red-700 active:scale-[0.97] shadow-sm shadow-red-600/20 disabled:opacity-50"
               >
                 Konfirmasi Tolak
               </button>
@@ -217,9 +217,9 @@ export default function ResellerDetailPage() {
         </div>
 
         {/* Bank Card */}
-        <div className="mb-4 rounded-2xl bg-white p-5 shadow-sm">
+        <div className="mb-4 rounded-3xl border border-[#f0e8dc] bg-white p-5 shadow-soft">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700">Data Rekening</h2>
+            <h2 className="font-display text-base font-semibold text-gray-900">Data Rekening</h2>
             <StatusBadge status={reseller.bank_status} />
           </div>
           {reseller.bank_account ? (
@@ -244,14 +244,14 @@ export default function ResellerDetailPage() {
             <button
               disabled={actionLoading || reseller.bank_status === 'approved'}
               onClick={() => doUpdate({ bank_status: 'approved' })}
-              className="flex-1 rounded-xl bg-green-600 py-2 text-xs font-semibold text-white transition hover:bg-green-700 disabled:opacity-50"
+              className="flex-1 rounded-xl bg-green-600 py-2.5 text-xs font-semibold text-white transition hover:bg-green-700 active:scale-[0.97] shadow-sm shadow-green-600/20 disabled:opacity-50 disabled:active:scale-100"
             >
               Setujui Rekening
             </button>
             <button
               disabled={actionLoading}
               onClick={() => doUpdate({ bank_status: 'rejected' })}
-              className="flex-1 rounded-xl bg-red-50 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100"
+              className="flex-1 rounded-xl bg-red-50 py-2.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 active:scale-[0.97]"
             >
               Tolak Rekening
             </button>
@@ -259,10 +259,10 @@ export default function ResellerDetailPage() {
         </div>
 
         {/* Activate Button */}
-        <div className="mb-4 rounded-2xl bg-white p-5 shadow-sm">
+        <div className="mb-4 rounded-3xl border border-[#f0e8dc] bg-white p-5 shadow-soft">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-gray-700">Status Akun</p>
+              <p className="font-display text-base font-semibold text-gray-900">Status Akun</p>
               <p className="text-xs text-gray-500">
                 {reseller.is_active ? 'Akun aktif dan bisa login' : 'Akun belum aktif'}
               </p>
@@ -270,10 +270,10 @@ export default function ResellerDetailPage() {
             <button
               disabled={actionLoading}
               onClick={() => doUpdate({ is_active: !reseller.is_active })}
-              className={`rounded-xl px-4 py-2 text-xs font-semibold transition disabled:opacity-50 ${
+              className={`rounded-xl px-4 py-2.5 text-xs font-semibold transition active:scale-[0.97] disabled:opacity-50 ${
                 reseller.is_active
                   ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  : 'bg-brand text-white hover:bg-brand-dark'
+                  : 'bg-brand text-white hover:bg-brand-dark shadow-sm shadow-brand/20'
               }`}
             >
               {reseller.is_active ? 'Nonaktifkan' : 'Aktifkan'}
@@ -282,9 +282,9 @@ export default function ResellerDetailPage() {
         </div>
 
         {/* Commission History */}
-        <div className="rounded-2xl bg-white shadow-sm">
-          <div className="border-b border-gray-100 px-5 py-4">
-            <h2 className="font-semibold text-gray-900">Riwayat Komisi</h2>
+        <div className="rounded-3xl border border-[#f0e8dc] bg-white shadow-soft overflow-hidden">
+          <div className="border-b border-gray-50 px-5 py-4">
+            <h2 className="font-display text-base font-semibold text-gray-900">Riwayat Komisi</h2>
           </div>
           {commissions.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-400">Belum ada komisi</div>
@@ -298,7 +298,7 @@ export default function ResellerDetailPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-brand">{formatRupiah(c.commission_amount)}</p>
-                    <span className={`text-xs ${c.status === 'paid' ? 'text-green-600' : 'text-yellow-600'}`}>
+                    <span className={`mt-0.5 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${c.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                       {c.status === 'paid' ? 'Dibayar' : 'Proses'}
                     </span>
                   </div>

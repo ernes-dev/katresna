@@ -30,7 +30,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col">
+      <div className="bg-white rounded-2xl overflow-hidden border border-[#f0e8dc] shadow-soft hover:shadow-float transition-shadow duration-200 flex flex-col">
         <div className="relative w-full aspect-square bg-gray-100 overflow-hidden">
           {product.image_url ? (
             <Image

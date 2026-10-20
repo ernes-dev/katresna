@@ -93,15 +93,15 @@ export default function AdminBannersPage() {
     <div className="max-w-2xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Flyer Carousel</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Maksimal 5 flyer, tampil di halaman utama</p>
+          <h1 className="font-display text-2xl font-semibold text-gray-900">Flyer Carousel</h1>
+          <p className="text-sm text-gray-400 mt-0.5">Maksimal 5 flyer, tampil di halaman utama</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">{banners.length}/5</span>
+          <span className="text-sm text-gray-400 font-medium">{banners.length}/5</span>
           <button
             onClick={() => fileRef.current?.click()}
             disabled={uploading || banners.length >= 5}
-            className="flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-dark transition disabled:opacity-40"
+            className="flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-dark active:scale-[0.97] transition shadow-sm shadow-brand/20 disabled:opacity-40"
           >
             {uploading ? <Loader2 size={15} className="animate-spin" /> : <Upload size={15} />}
             Upload Flyer
@@ -124,7 +124,7 @@ export default function AdminBannersPage() {
       ) : banners.length === 0 ? (
         <div
           onClick={() => fileRef.current?.click()}
-          className="border-2 border-dashed border-gray-200 rounded-2xl h-44 flex flex-col items-center justify-center gap-3 text-gray-400 cursor-pointer hover:border-brand hover:text-brand transition"
+          className="border-2 border-dashed border-[#e8ddcc] rounded-3xl h-44 flex flex-col items-center justify-center gap-3 text-gray-400 cursor-pointer hover:border-brand hover:text-brand transition bg-white"
         >
           <ImageIcon size={40} />
           <div className="text-center">
@@ -136,7 +136,7 @@ export default function AdminBannersPage() {
       ) : (
         <div className="space-y-3">
           {banners.map((banner, i) => (
-            <div key={banner.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex gap-0">
+            <div key={banner.id} className="bg-white rounded-2xl shadow-soft border border-[#f0e8dc] overflow-hidden flex gap-0">
               {/* Preview */}
               <div className="relative w-40 h-24 shrink-0 bg-gray-100">
                 <Image
@@ -194,7 +194,7 @@ export default function AdminBannersPage() {
             <button
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="w-full border-2 border-dashed border-gray-200 rounded-2xl py-4 flex items-center justify-center gap-2 text-gray-400 hover:border-brand hover:text-brand transition text-sm font-medium"
+              className="w-full border-2 border-dashed border-[#e8ddcc] rounded-2xl py-4 flex items-center justify-center gap-2 text-gray-400 hover:border-brand hover:text-brand transition text-sm font-medium bg-white"
             >
               <Upload size={16} />
               Tambah flyer ({5 - banners.length} slot tersisa)
@@ -203,8 +203,8 @@ export default function AdminBannersPage() {
         </div>
       )}
 
-      <div className="mt-6 p-4 bg-gray-50 rounded-xl text-xs text-gray-500 space-y-1">
-        <p className="font-semibold text-gray-700">Tips:</p>
+      <div className="mt-6 p-4 bg-brand-light/50 border border-[#f0e8dc] rounded-2xl text-xs text-gray-500 space-y-1">
+        <p className="font-semibold text-brand">Tips:</p>
         <p>• Gunakan gambar rasio 16:9 (misal: 1280×720px atau 1920×1080px)</p>
         <p>• Format: JPG, PNG, atau WebP</p>
         <p>• Klik badge Aktif/Nonaktif untuk tampil/sembunyikan flyer</p>

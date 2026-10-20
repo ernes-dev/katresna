@@ -51,7 +51,7 @@ function IsianModal({
   return (
     <>
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
-      <div className="fixed inset-x-4 top-[5%] bottom-[5%] z-50 bg-white rounded-2xl shadow-2xl flex flex-col max-w-md mx-auto overflow-hidden">
+      <div className="fixed inset-x-4 top-[5%] bottom-[5%] z-50 bg-white rounded-3xl border border-[#f0e8dc] shadow-2xl flex flex-col max-w-md mx-auto overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
           <div>
@@ -166,7 +166,7 @@ function ProductPickerModal({ products, onSelect, onClose }: {
   return (
     <>
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
-      <div className="fixed inset-x-4 top-[5%] bottom-[5%] z-50 bg-white rounded-2xl shadow-2xl flex flex-col max-w-md mx-auto overflow-hidden">
+      <div className="fixed inset-x-4 top-[5%] bottom-[5%] z-50 bg-white rounded-3xl border border-[#f0e8dc] shadow-2xl flex flex-col max-w-md mx-auto overflow-hidden">
 
         {variantStep ? (
           /* Step 2: Variant picker */
@@ -402,16 +402,16 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const inputClass = "w-full border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand/40 text-sm transition bg-white"
+  const inputClass = "w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition bg-white focus:border-brand focus:ring-1 focus:ring-brand"
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-xl font-bold text-gray-900 mb-5">Buat Invoice / PO</h1>
+      <h1 className="font-display text-2xl font-semibold text-gray-900 mb-5">Buat Invoice / PO</h1>
 
       <div className="space-y-4">
 
         {/* PO toggle + number */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-3xl p-4 shadow-soft border border-[#f0e8dc]">
           <div className="flex items-center justify-between gap-4 mb-3">
             <div>
               <p className="font-semibold text-gray-800 text-sm">Mode Purchase Order (PO)</p>
@@ -434,7 +434,7 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
         </div>
 
         {/* Customer info */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
+        <div className="bg-white rounded-3xl p-4 shadow-soft border border-[#f0e8dc] space-y-3">
           <h2 className="font-semibold text-gray-800 text-sm">{isPO ? 'Data Reseller / Jastiper' : 'Data Pelanggan'}</h2>
           {isPO && (
             <div>
@@ -458,7 +458,7 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
         </div>
 
         {/* Items */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-3xl p-4 shadow-soft border border-[#f0e8dc]">
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold text-gray-800 text-sm">Item Pesanan</h2>
             <button onClick={addItem}
@@ -573,7 +573,7 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
         </div>
 
         {/* Shipping + Cashback + Notes */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
+        <div className="bg-white rounded-3xl p-4 shadow-soft border border-[#f0e8dc] space-y-4">
 
           {/* Shipping */}
           <div>
@@ -627,7 +627,7 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
         </div>
 
         {/* Total summary */}
-        <div className="bg-brand-light rounded-2xl p-4 border border-brand/15">
+        <div className="bg-brand-light rounded-3xl p-5 border border-brand/15 shadow-soft">
           <div className="space-y-1.5">
             <div className="flex justify-between text-sm text-gray-600">
               <span>Subtotal</span><span className="font-medium">{formatPrice(subtotal)}</span>
@@ -653,14 +653,14 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={handleCopy}
-            className="flex items-center justify-center gap-2 px-4 py-3.5 border-2 border-brand text-brand rounded-xl font-bold text-sm hover:bg-brand-light transition"
+            className="flex items-center justify-center gap-2 px-4 py-3.5 border-2 border-brand text-brand rounded-xl font-bold text-sm hover:bg-brand-light active:scale-[0.97] transition"
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
             {copied ? 'Tersalin!' : 'Salin Teks'}
           </button>
           <button
             onClick={handleSend}
-            className="flex items-center justify-center gap-2 px-4 py-3.5 bg-brand text-white rounded-xl font-bold text-sm hover:bg-brand-dark transition shadow-sm shadow-brand/20"
+            className="flex items-center justify-center gap-2 px-4 py-3.5 bg-brand text-white rounded-xl font-bold text-sm hover:bg-brand-dark active:scale-[0.97] transition shadow-sm shadow-brand/20"
           >
             <Send size={16} />
             Kirim via WA
@@ -674,8 +674,8 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
         )}
 
         {/* Preview */}
-        <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-4 py-2.5 border-b border-gray-200 bg-white">
+        <div className="bg-white rounded-3xl border border-[#f0e8dc] shadow-soft overflow-hidden">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-4 py-3 border-b border-[#f0e8dc] bg-brand-light/40">
             Preview Pesan WhatsApp
           </p>
           <pre className="text-xs text-gray-600 whitespace-pre-wrap font-sans leading-relaxed p-4">
