@@ -68,7 +68,7 @@ function ProductPickerModal({ products, onSelect, onClose }: {
                   className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl border-2 border-gray-100 hover:border-brand hover:bg-brand-light transition group"
                 >
                   <span className="font-semibold text-gray-800 group-hover:text-brand">{v.name}</span>
-                  <span className="font-bold text-brand text-base">{formatPrice(v.price)}</span>
+                  {!variantStep.is_custom_box && <span className="font-bold text-brand text-base">{formatPrice(v.price)}</span>}
                 </button>
               ))}
             </div>
@@ -116,12 +116,14 @@ function ProductPickerModal({ products, onSelect, onClose }: {
                             )}
                           </div>
                           <p className="text-xs font-semibold text-gray-800 line-clamp-2 leading-tight">{p.name}</p>
-                          <p className="text-xs text-brand font-bold mt-0.5">
-                            {p.variants && p.variants.length > 0
-                              ? `ab ${formatPrice(Math.min(...p.variants.map(v => v.price)))}`
-                              : formatPrice(p.price)
-                            }
-                          </p>
+                          {!p.is_custom_box && (
+                            <p className="text-xs text-brand font-bold mt-0.5">
+                              {p.variants && p.variants.length > 0
+                                ? `ab ${formatPrice(Math.min(...p.variants.map(v => v.price)))}`
+                                : formatPrice(p.price)
+                              }
+                            </p>
+                          )}
                         </button>
                       ))}
                     </div>

@@ -97,7 +97,6 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
                 }`}
               >
                 {v.name}
-                <span className="block text-xs font-normal mt-0.5">{formatPrice(v.price)}</span>
               </button>
             ))}
           </div>
@@ -116,9 +115,8 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
                 </span>
               </div>
               {totalSelected > 0 && (
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
-                  <span>Box {formatPrice(selectedVariant!.price)} + Isian {formatPrice(bolenTotal)}</span>
-                  <span className="font-semibold text-brand">{formatPrice(grandTotal)}</span>
+                <div className="flex justify-end text-xs text-gray-400 mt-1">
+                  <span className="font-semibold text-brand">{totalSelected}/{maxItems} isian dipilih</span>
                 </div>
               )}
             </div>
@@ -145,7 +143,6 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">{item.name}</p>
-                          <p className="text-xs text-gray-400">{formatPrice(item.price)}</p>
                         </div>
                         {qty === 0 ? (
                           <button
