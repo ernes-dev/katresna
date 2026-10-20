@@ -32,7 +32,21 @@ export default function OrdersPage() {
 
   const fetchOrders = useCallback(async () => {
     const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
+
+    const { data: profile } = await supabase
+      .from('resellers')
+      .select('id, role')
+      .eq('user_id', user.id)
+      .single()
+
+    const isFullAdmin = !profile || profile.role === 'admin'
+
     const query = supabase.from('orders').select('*').order('created_at', { ascending: false })
+    if (!isFullAdmin) {
+      query.eq('reseller_id', profile!.id)
+    }
     if (filter === 'today') {
       const jakartaToday = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }))
       jakartaToday.setHours(0, 0, 0, 0)

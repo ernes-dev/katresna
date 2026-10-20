@@ -297,9 +297,12 @@ export default function InvoicePage() {
   const [pickerOpenFor, setPickerOpenFor] = useState<number | null>(null)
   const [isianModalFor, setIsianModalFor] = useState<number | null>(null)
   const [invoiceNumber] = useState(() => genInvoiceNumber(false))
+  const [resellerId, setResellerId] = useState<string | null>(null)
+  const [savedOrder, setSavedOrder] = useState(false)
 
   useEffect(() => {
-    createClient().from('products').select('*, category:categories(*)').eq('is_available', true)
+    const supabase = createClient()
+    supabase.from('products').select('*, category:categories(*)').eq('is_available', true)
       .then(({ data }) => {
         const sorted = (data || []).sort((a: any, b: any) => {
           const ai = CATEGORY_ORDER.indexOf(a.category?.name?.toLowerCase() || '')
@@ -311,7 +314,15 @@ export default function InvoicePage() {
         })
         setProducts(sorted)
       })
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase.from('resellers').select('id').eq('user_id', user.id).single()
+        .then(({ data }) => { if (data) setResellerId(data.id) })
+    })
   }, [])
+
+  useEffect(() => { setSavedOrder(false) }, [items, customerWA, customerName, shippingCost])
 
   const addItem = () => setItems(prev => [...prev, { name: '', qty: 1, price: 0 }])
   const removeItem = (i: number) => setItems(prev => prev.filter((_, idx) => idx !== i))
@@ -353,8 +364,35 @@ Mohon lakukan pembayaran sesuai total di atas.
 Terima kasih telah memesan Bolen Katresna! 🎉`
   }
 
-  const handleSend = () => {
+  const saveOrder = async () => {
+    if (savedOrder) return
+    const validItems = items.filter(i => i.name.trim())
+    if (validItems.length === 0) return
+    const supabase = createClient()
+    const orderItems = validItems.map(i => ({
+      name: i.name,
+      quantity: i.qty,
+      price: i.price,
+      ...(i.isian && i.isian.length > 0 ? { isian: i.isian } : {}),
+    }))
+    const { error } = await supabase.from('orders').insert({
+      customer_name: customerName || resellerName || 'Pelanggan',
+      customer_whatsapp: customerWA.trim(),
+      items: orderItems,
+      subtotal,
+      shipping_method: null,
+      address: null,
+      courier: null,
+      notes: notes || null,
+      status: 'pending',
+      reseller_id: resellerId,
+    })
+    if (!error) setSavedOrder(true)
+  }
+
+  const handleSend = async () => {
     if (!customerWA.trim()) return alert('Isi nomor WA pelanggan')
+    await saveOrder()
     window.open(`https://wa.me/${formatWA(customerWA)}?text=${encodeURIComponent(buildMessage())}`, '_blank')
   }
 
@@ -628,6 +666,12 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
             Kirim via WA
           </button>
         </div>
+
+        {savedOrder && (
+          <div className="flex items-center justify-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-green-700">
+            <Check size={15} /> Pesanan tersimpan &amp; masuk ke antrian Pesanan kamu
+          </div>
+        )}
 
         {/* Preview */}
         <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
