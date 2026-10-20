@@ -143,6 +143,7 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-gray-900 truncate">{item.name}</p>
+                          <p className="text-xs text-gray-400">{formatPrice(item.price)}</p>
                         </div>
                         {qty === 0 ? (
                           <button
