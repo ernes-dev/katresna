@@ -18,6 +18,8 @@ interface MitraAccount {
   is_active: boolean
   totalCommission: number
   totalOrders: number
+  pendingCommission: number
+  paidCommission: number
 }
 
 const ROLE_STYLE: Record<string, { label: string; bg: string; text: string }> = {
@@ -180,38 +182,60 @@ export default function AdminAccountsPage() {
 
   const getRange = useCallback(() => ({ from: rangeFrom, to: rangeTo }), [rangeFrom, rangeTo])
 
-  useEffect(() => {
-    const load = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.replace('/mitra/login'); return }
-      const { data: profile } = await supabase.from('resellers').select('role').eq('user_id', user.id).single()
-      if (!profile || profile.role !== 'admin') { router.replace('/mitra/dashboard'); return }
+  const load = useCallback(async () => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { router.replace('/mitra/login'); return }
+    const { data: profile } = await supabase.from('resellers').select('role').eq('user_id', user.id).single()
+    if (!profile || profile.role !== 'admin') { router.replace('/mitra/dashboard'); return }
 
-      const { from, to } = getRange()
-      const toEnd = to + 'T23:59:59'
+    const { from, to } = getRange()
+    const fromStart = from
+    const toEnd = to + 'T23:59:59'
 
-      const [{ data: resellers }, { data: commissions }] = await Promise.all([
-        supabase.from('resellers').select('id, full_name, email, phone, role, bank_name, bank_account, bank_holder, is_active').order('full_name'),
-        supabase.from('commissions').select('reseller_id, commission_amount').gte('created_at', from).lte('created_at', toEnd),
-      ])
+    const [{ data: resellers }, { data: commissions }] = await Promise.all([
+      supabase.from('resellers').select('id, full_name, email, phone, role, bank_name, bank_account, bank_holder, is_active').order('full_name'),
+      supabase.from('commissions').select('reseller_id, commission_amount, status, created_at'),
+    ])
 
-      const commMap: Record<string, { total: number; count: number }> = {}
-      for (const c of commissions ?? []) {
-        if (!commMap[c.reseller_id]) commMap[c.reseller_id] = { total: 0, count: 0 }
-        commMap[c.reseller_id].total += c.commission_amount
-        commMap[c.reseller_id].count += 1
+    const commMap: Record<string, { total: number; count: number; pending: number; paid: number }> = {}
+    for (const c of commissions ?? []) {
+      if (!commMap[c.reseller_id]) commMap[c.reseller_id] = { total: 0, count: 0, pending: 0, paid: 0 }
+      const m = commMap[c.reseller_id]
+      // Period stats (within selected date range)
+      if (c.created_at >= fromStart && c.created_at <= toEnd) {
+        m.total += c.commission_amount
+        m.count += 1
       }
-
-      setAccounts((resellers ?? []).map(r => ({
-        ...r,
-        totalCommission: commMap[r.id]?.total ?? 0,
-        totalOrders: commMap[r.id]?.count ?? 0,
-      })))
-      setLoading(false)
+      // Payout balance (all-time)
+      if (c.status === 'paid') m.paid += c.commission_amount
+      else m.pending += c.commission_amount
     }
-    load()
+
+    setAccounts((resellers ?? []).map(r => ({
+      ...r,
+      totalCommission: commMap[r.id]?.total ?? 0,
+      totalOrders: commMap[r.id]?.count ?? 0,
+      pendingCommission: commMap[r.id]?.pending ?? 0,
+      paidCommission: commMap[r.id]?.paid ?? 0,
+    })))
+    setLoading(false)
   }, [router, getRange])
+
+  useEffect(() => { load() }, [load])
+
+  const markPaid = async (resellerId: string, resellerName: string, amount: number) => {
+    if (amount <= 0) return
+    if (!confirm(`Tandai komisi ${resellerName} sebesar ${formatPrice(amount)} sebagai sudah dibayar?`)) return
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('commissions')
+      .update({ status: 'paid' })
+      .eq('reseller_id', resellerId)
+      .eq('status', 'pending')
+    if (error) { alert('Gagal: ' + error.message); return }
+    await load()
+  }
 
   const filtered = accounts.filter(a =>
     a.full_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -315,7 +339,7 @@ export default function AdminAccountsPage() {
 
                   <div className="flex gap-6 mb-3">
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Komisi</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Komisi Periode</p>
                       <p className="text-sm font-bold text-brand">{formatPrice(a.totalCommission)}</p>
                     </div>
                     <div>
@@ -323,6 +347,30 @@ export default function AdminAccountsPage() {
                       <p className="text-sm font-bold text-gray-800">{a.totalOrders}</p>
                     </div>
                   </div>
+
+                  {/* Payout balance */}
+                  {a.role !== 'admin' && (a.pendingCommission > 0 || a.paidCommission > 0) && (
+                    <div className="flex items-center justify-between gap-3 bg-[#FFF8F0] rounded-xl px-3 py-2.5 mb-3">
+                      <div className="flex gap-5">
+                        <div>
+                          <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-0.5">Belum Dibayar</p>
+                          <p className="text-sm font-bold text-amber-600">{formatPrice(a.pendingCommission)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold text-green-500 uppercase tracking-wider mb-0.5">Sudah Dibayar</p>
+                          <p className="text-sm font-bold text-green-600">{formatPrice(a.paidCommission)}</p>
+                        </div>
+                      </div>
+                      {a.pendingCommission > 0 && (
+                        <button
+                          onClick={() => markPaid(a.id, a.full_name, a.pendingCommission)}
+                          className="shrink-0 rounded-xl bg-brand px-3 py-2 text-xs font-bold text-white hover:bg-brand-dark transition"
+                        >
+                          Tandai Lunas
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   {a.bank_account ? (
                     <div className="flex items-center gap-2 bg-[#FFF8F0] rounded-xl px-3 py-2">

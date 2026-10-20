@@ -4,6 +4,7 @@ import { RefreshCw, Phone, MapPin, Clock, Package } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Order } from '@/lib/types'
 import { formatPrice } from '@/lib/utils'
+import { getCommissionTiers, getCommissionTier, calculateCommission } from '@/lib/mitra'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending:    { label: 'Menunggu',   color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
@@ -64,9 +65,44 @@ export default function OrdersPage() {
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
+  const generateCommission = async (order: Order) => {
+    const resellerId = (order as any).reseller_id as string | null
+    if (!resellerId) return
+    const supabase = createClient()
+
+    const { data: existing } = await supabase
+      .from('commissions')
+      .select('id')
+      .eq('order_ref', order.id)
+      .maybeSingle()
+    if (existing) return
+
+    const { count } = await supabase
+      .from('commissions')
+      .select('*', { count: 'exact', head: true })
+      .eq('reseller_id', resellerId)
+    const salesCount = (count ?? 0) + 1
+
+    const tiers = await getCommissionTiers()
+    const tier = getCommissionTier(salesCount, tiers)
+    const amount = calculateCommission(order.subtotal, tier)
+
+    await supabase.from('commissions').insert({
+      reseller_id: resellerId,
+      order_ref: order.id,
+      order_amount: order.subtotal,
+      commission_amount: amount,
+      status: 'pending',
+    })
+  }
+
   const updateStatus = async (id: string, status: string) => {
     const supabase = createClient()
     await supabase.from('orders').update({ status }).eq('id', id)
+    if (status === 'done') {
+      const order = orders.find(o => o.id === id)
+      if (order) await generateCommission(order)
+    }
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status: status as Order['status'] } : o))
   }
 
