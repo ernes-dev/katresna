@@ -83,7 +83,7 @@ export default function ProductCard({ product }: { product: Product }) {
           <div className="flex items-end justify-between mt-auto pt-2">
             <div>
               {hasVariants && <span className="text-[10px] text-gray-400 block leading-tight">Mulai</span>}
-              <span className="font-bold text-brand text-sm">{formatPrice(displayPrice)}</span>
+              {!isCustomBox && <span className="font-bold text-brand text-sm">{formatPrice(displayPrice)}</span>}
             </div>
 
             {(hasVariants || isCustomBox) ? (
