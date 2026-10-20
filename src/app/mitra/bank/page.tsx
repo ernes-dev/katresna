@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
 
 const BANK_OPTIONS = [
   'BCA', 'BRI', 'BNI', 'Mandiri', 'BSI',
@@ -85,14 +86,17 @@ export default function MitraBankPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Data Rekening</h1>
-          <p className="mt-1 text-sm text-gray-500">Langkah 2 dari 2</p>
-        </div>
+    <div className="min-h-screen bg-[#FFF8F0] px-4 py-10 flex flex-col items-center justify-center">
+      <div className="w-full max-w-sm space-y-5">
+        <Image src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi" className="mx-auto h-12 w-auto object-contain" unoptimized alt="Katresna" width={120} height={48} />
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-1.5 rounded-full bg-brand" />
+          <div className="flex-1 h-1.5 rounded-full bg-brand" />
+        </div>
+        <p className="text-xs text-gray-400 text-center">Langkah 2 dari 2 — Data Rekening</p>
+
+        <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
           <div className="mb-5 rounded-xl bg-brand-light p-4">
             <p className="text-xs text-brand">
               Nama pemilik rekening harus sesuai dengan nama yang tertera di KTP.

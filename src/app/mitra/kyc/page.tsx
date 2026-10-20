@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
 
 export default function MitraKycPage() {
   const router = useRouter()
@@ -84,14 +85,17 @@ export default function MitraKycPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Verifikasi Identitas</h1>
-          <p className="mt-1 text-sm text-gray-500">Langkah 1 dari 2</p>
-        </div>
+    <div className="min-h-screen bg-[#FFF8F0] px-4 py-10 flex flex-col items-center justify-center">
+      <div className="w-full max-w-sm space-y-5">
+        <Image src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi" className="mx-auto h-12 w-auto object-contain" unoptimized alt="Katresna" width={120} height={48} />
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-1.5 rounded-full bg-brand" />
+          <div className="flex-1 h-1.5 rounded-full bg-gray-200" />
+        </div>
+        <p className="text-xs text-gray-400 text-center">Langkah 1 dari 2 — Verifikasi KTP</p>
+
+        <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
           <div className="mb-5 rounded-xl bg-brand-light p-4">
             <p className="text-sm font-medium text-brand">Petunjuk Foto KTP</p>
             <ul className="mt-2 space-y-1 text-xs text-brand">
