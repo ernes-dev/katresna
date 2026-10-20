@@ -29,6 +29,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'today' | 'all'>('today')
+  const [isAdmin, setIsAdmin] = useState(false)
 
   const fetchOrders = useCallback(async () => {
     const supabase = createClient()
@@ -42,8 +43,12 @@ export default function OrdersPage() {
       .single()
 
     const isFullAdmin = !profile || profile.role === 'admin'
+    setIsAdmin(isFullAdmin)
 
-    const query = supabase.from('orders').select('*').order('created_at', { ascending: false })
+    const query = supabase
+      .from('orders')
+      .select('*, reseller:resellers(full_name, role)')
+      .order('created_at', { ascending: false })
     if (!isFullAdmin) {
       query.eq('reseller_id', profile!.id)
     }
@@ -123,6 +128,15 @@ export default function OrdersPage() {
                       <p className="font-bold text-gray-900">{order.customer_name}</p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${st.color}`}>{st.label}</span>
+                        {isAdmin && (order as any).reseller && (
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                            (order as any).reseller.role === 'jastiper'
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-purple-100 text-purple-700'
+                          }`}>
+                            {(order as any).reseller.role === 'jastiper' ? 'Jastiper' : 'Reseller'} · {(order as any).reseller.full_name}
+                          </span>
+                        )}
                         {order.customer_whatsapp && (
                           <a href={`https://wa.me/62${order.customer_whatsapp.replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer"
                             className="flex items-center gap-1 text-xs text-green-600 font-semibold hover:underline">
