@@ -313,83 +313,89 @@ export default function AdminAccountsPage() {
       </div>
 
       {/* List */}
-      <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
-        {filtered.length === 0 ? (
-          <div className="py-16 text-center text-sm text-gray-400">Tidak ada mitra ditemukan</div>
-        ) : (
-          <div className="divide-y divide-[#fdf4ec]">
-            {filtered.map(a => {
-              const roleInfo = ROLE_STYLE[a.role] ?? ROLE_STYLE.reseller
-              return (
-                <div key={a.id} className="px-5 py-4">
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-semibold text-gray-900 text-sm">{a.full_name}</p>
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${roleInfo.bg} ${roleInfo.text}`}>
-                          {roleInfo.label}
-                        </span>
-                        {!a.is_active && (
-                          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-400 font-medium">Inaktif</span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-400 mt-0.5">{a.email}{a.phone ? ` · ${a.phone}` : ''}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-6 mb-3">
-                    <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Komisi Periode</p>
-                      <p className="text-sm font-bold text-brand">{formatPrice(a.totalCommission)}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Order</p>
-                      <p className="text-sm font-bold text-gray-800">{a.totalOrders}</p>
-                    </div>
-                  </div>
-
-                  {/* Payout balance */}
-                  {a.role !== 'admin' && (a.pendingCommission > 0 || a.paidCommission > 0) && (
-                    <div className="flex items-center justify-between gap-3 bg-[#FFF8F0] rounded-xl px-3 py-2.5 mb-3">
-                      <div className="flex gap-5">
-                        <div>
-                          <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-0.5">Belum Dibayar</p>
-                          <p className="text-sm font-bold text-amber-600">{formatPrice(a.pendingCommission)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-bold text-green-500 uppercase tracking-wider mb-0.5">Sudah Dibayar</p>
-                          <p className="text-sm font-bold text-green-600">{formatPrice(a.paidCommission)}</p>
-                        </div>
-                      </div>
-                      {a.pendingCommission > 0 && (
-                        <button
-                          onClick={() => markPaid(a.id, a.full_name, a.pendingCommission)}
-                          className="shrink-0 rounded-xl bg-brand px-3 py-2 text-xs font-bold text-white hover:bg-brand-dark transition"
-                        >
-                          Tandai Lunas
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {a.bank_account ? (
-                    <div className="flex items-center gap-2 bg-[#FFF8F0] rounded-xl px-3 py-2">
-                      <Building2 size={13} className="shrink-0 text-gray-400" />
-                      <p className="text-xs text-gray-600">
-                        <span className="font-medium">{a.bank_name}</span>
-                        {' '}· {a.bank_account}
-                        {a.bank_holder ? ` · a/n ${a.bank_holder}` : ''}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-300 italic">Belum ada info bank</p>
+      {filtered.length === 0 ? (
+        <div className="rounded-2xl bg-white border border-gray-100 shadow-sm py-16 text-center text-sm text-gray-400">
+          Tidak ada mitra ditemukan
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map(a => {
+            const roleInfo = ROLE_STYLE[a.role] ?? ROLE_STYLE.reseller
+            const isMitra = a.role !== 'admin'
+            return (
+              <div key={a.id} className="rounded-2xl bg-white border border-[#f0e8dc] shadow-sm p-4">
+                {/* Header */}
+                <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                  <p className="font-bold text-gray-900">{a.full_name}</p>
+                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${roleInfo.bg} ${roleInfo.text}`}>
+                    {roleInfo.label}
+                  </span>
+                  {!a.is_active && (
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-400 font-medium">Inaktif</span>
                   )}
                 </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
+                <p className="text-xs text-gray-400">{a.email}{a.phone ? ` · ${a.phone}` : ''}</p>
+
+                {isMitra && (
+                  <>
+                    {/* Period stats */}
+                    <div className="flex gap-8 mt-3 pt-3 border-t border-gray-50">
+                      <div>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Komisi Periode</p>
+                        <p className="text-sm font-bold text-brand">{formatPrice(a.totalCommission)}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Order</p>
+                        <p className="text-sm font-bold text-gray-800">{a.totalOrders}</p>
+                      </div>
+                    </div>
+
+                    {/* Payout balance */}
+                    {(a.pendingCommission > 0 || a.paidCommission > 0) && (
+                      <div className="flex items-center justify-between gap-3 bg-[#FFF8F0] rounded-xl px-3.5 py-3 mt-3">
+                        <div className="flex gap-6">
+                          <div>
+                            <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-0.5">Belum Dibayar</p>
+                            <p className="text-sm font-bold text-amber-600">{formatPrice(a.pendingCommission)}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold text-green-500 uppercase tracking-wider mb-0.5">Sudah Dibayar</p>
+                            <p className="text-sm font-bold text-green-600">{formatPrice(a.paidCommission)}</p>
+                          </div>
+                        </div>
+                        {a.pendingCommission > 0 && (
+                          <button
+                            onClick={() => markPaid(a.id, a.full_name, a.pendingCommission)}
+                            className="shrink-0 rounded-xl bg-brand px-3.5 py-2 text-xs font-bold text-white hover:bg-brand-dark active:scale-[0.98] transition shadow-sm shadow-brand/20"
+                          >
+                            Tandai Lunas
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Bank */}
+                    <div className="mt-3">
+                      {a.bank_account ? (
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <Building2 size={13} className="shrink-0 text-gray-400" />
+                          <span>
+                            <span className="font-medium text-gray-600">{a.bank_name}</span>
+                            {' '}· {a.bank_account}
+                            {a.bank_holder ? ` · a/n ${a.bank_holder}` : ''}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-300 italic">Belum ada info bank</p>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

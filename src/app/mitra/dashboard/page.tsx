@@ -90,9 +90,9 @@ export default function MitraDashboardPage() {
     )
   }
 
-  const approvedCommissions = commissions.filter(c => c.status !== 'pending')
-  const totalSales = approvedCommissions.length
-  const totalEarned = approvedCommissions.reduce((s, c) => s + c.commission_amount, 0)
+  const totalSales = commissions.length
+  const totalEarned = commissions.reduce((s, c) => s + c.commission_amount, 0)
+  const paidEarned = commissions.filter(c => c.status === 'paid').reduce((s, c) => s + c.commission_amount, 0)
   const currentTier = getCommissionTier(totalSales, tiers)
   const nextTier = tiers.find(t => t.min_sales > totalSales) ?? null
   const progressPct = currentTier && nextTier
@@ -106,9 +106,10 @@ export default function MitraDashboardPage() {
         <Image
           src="https://lh3.googleusercontent.com/d/1TpFd2rJxeYrmtmyjl6L-6cQrX9sQI1fi"
           alt="Katresna"
-          height={32}
-          width={0}
-          className="h-8 w-auto"
+          height={50}
+          width={110}
+          className="h-9 w-auto object-contain"
+          unoptimized
         />
         <button
           onClick={handleLogout}
@@ -143,6 +144,7 @@ export default function MitraDashboardPage() {
               <p className="text-xs text-gray-500">Total Komisi</p>
             </div>
             <p className="text-lg font-bold text-brand">{formatRupiah(totalEarned)}</p>
+            <p className="text-[11px] text-gray-400 mt-0.5">Dibayar: {formatRupiah(paidEarned)}</p>
           </div>
           <div className="rounded-2xl bg-white p-4 shadow-sm">
             <div className="mb-2 flex items-center gap-2">
@@ -236,8 +238,8 @@ export default function MitraDashboardPage() {
                     <Package className="h-4 w-4 text-gray-400" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-gray-800">{c.order_ref}</p>
-                    <p className="text-xs text-gray-400">{formatDate(c.created_at)}</p>
+                    <p className="truncate text-sm font-medium text-gray-800">Komisi Pesanan</p>
+                    <p className="text-xs text-gray-400">{formatDate(c.created_at)} · dari {formatRupiah(c.order_amount)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-brand">{formatRupiah(c.commission_amount)}</p>
