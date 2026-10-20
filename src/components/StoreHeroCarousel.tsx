@@ -29,10 +29,10 @@ export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
     return () => clearInterval(id)
   }, [banners.length])
 
-  if (banners.length === 0) {
-    return (
+  return (
+    <>
+      {/* Branded hero — always on top */}
       <div className="mt-4 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand to-brand-dark px-6 py-8 shadow-float">
-        {/* Decorative layers */}
         <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-white/10 blur-sm" />
         <div className="pointer-events-none absolute right-10 top-16 h-24 w-24 rounded-full bg-white/5" />
         <div className="pointer-events-none absolute -left-8 -bottom-10 h-36 w-36 rounded-full bg-black/10 blur-sm" />
@@ -56,44 +56,45 @@ export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
           </div>
         </div>
       </div>
-    )
-  }
 
-  return (
-    <div className="mt-4">
-      <div
-        ref={ref}
-        onScroll={handleScroll}
-        className="flex overflow-x-auto snap-x snap-mandatory rounded-2xl"
-        style={{ scrollBehavior: 'smooth', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
-        {banners.map((banner) => (
-          <div key={banner.id} className="min-w-full snap-center relative h-44 rounded-2xl overflow-hidden bg-gray-100">
-            <Image
-              src={banner.image_url}
-              alt="Flyer"
-              fill
-              className="object-cover"
-              unoptimized
-              priority
-            />
+      {/* Flyer carousel — below the hero, only when flyers exist */}
+      {banners.length > 0 && (
+        <div className="mt-3">
+          <div
+            ref={ref}
+            onScroll={handleScroll}
+            className="flex overflow-x-auto snap-x snap-mandatory rounded-2xl no-scrollbar"
+            style={{ scrollBehavior: 'smooth' }}
+          >
+            {banners.map((banner) => (
+              <div key={banner.id} className="min-w-full snap-center relative h-44 rounded-2xl overflow-hidden bg-gray-100 border border-[#f0e8dc]">
+                <Image
+                  src={banner.image_url}
+                  alt="Flyer"
+                  fill
+                  className="object-cover"
+                  unoptimized
+                  priority
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {banners.length > 1 && (
-        <div className="flex justify-center gap-1.5 mt-2.5">
-          {banners.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              className={`rounded-full transition-all duration-200 ${
-                active === i ? 'w-5 h-1.5 bg-[#C0392B]' : 'w-1.5 h-1.5 bg-gray-300'
-              }`}
-            />
-          ))}
+          {banners.length > 1 && (
+            <div className="flex justify-center gap-1.5 mt-2.5">
+              {banners.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  className={`rounded-full transition-all duration-200 ${
+                    active === i ? 'w-5 h-1.5 bg-brand' : 'w-1.5 h-1.5 bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </>
   )
 }
