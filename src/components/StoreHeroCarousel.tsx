@@ -1,31 +1,19 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Sparkles, Truck } from 'lucide-react'
 import { Banner } from '@/lib/types'
 
 export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
   const [active, setActive] = useState(0)
-  const ref = useRef<HTMLDivElement>(null)
 
-  const handleScroll = () => {
-    if (!ref.current) return
-    setActive(Math.round(ref.current.scrollLeft / ref.current.offsetWidth))
-  }
-
-  const goTo = (i: number) => {
-    ref.current?.scrollTo({ left: i * (ref.current.offsetWidth ?? 0), behavior: 'smooth' })
-  }
+  const goTo = (i: number) => setActive(i)
 
   useEffect(() => {
     if (banners.length <= 1) return
     const id = setInterval(() => {
-      setActive(prev => {
-        const next = (prev + 1) % banners.length
-        ref.current?.scrollTo({ left: next * (ref.current.offsetWidth ?? 0), behavior: 'smooth' })
-        return next
-      })
-    }, 3500)
+      setActive(prev => (prev + 1) % banners.length)
+    }, 4000)
     return () => clearInterval(id)
   }, [banners.length])
 
@@ -60,24 +48,24 @@ export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
       {/* Flyer carousel — below the hero, only when flyers exist */}
       {banners.length > 0 && (
         <div className="mt-3">
-          <div
-            ref={ref}
-            onScroll={handleScroll}
-            className="flex overflow-x-auto snap-x snap-mandatory rounded-2xl no-scrollbar"
-            style={{ scrollBehavior: 'smooth' }}
-          >
-            {banners.map((banner) => (
-              <div key={banner.id} className="min-w-full snap-center relative h-44 rounded-2xl overflow-hidden bg-gray-100 border border-[#f0e8dc]">
-                <Image
-                  src={banner.image_url}
-                  alt="Flyer"
-                  fill
-                  className="object-cover"
-                  unoptimized
-                  priority
-                />
-              </div>
-            ))}
+          <div className="relative overflow-hidden rounded-2xl border border-[#f0e8dc] bg-brand-light">
+            <div
+              className="flex transition-transform duration-500 ease-out"
+              style={{ transform: `translateX(-${active * 100}%)` }}
+            >
+              {banners.map((banner) => (
+                <div key={banner.id} className="relative min-w-full h-44">
+                  <Image
+                    src={banner.image_url}
+                    alt="Flyer"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                    priority
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           {banners.length > 1 && (
@@ -86,6 +74,7 @@ export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
                 <button
                   key={i}
                   onClick={() => goTo(i)}
+                  aria-label={`Flyer ${i + 1}`}
                   className={`rounded-full transition-all duration-200 ${
                     active === i ? 'w-5 h-1.5 bg-brand' : 'w-1.5 h-1.5 bg-gray-300'
                   }`}
