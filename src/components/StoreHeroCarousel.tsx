@@ -54,7 +54,7 @@ export default function StoreHeroCarousel({ banners }: { banners: Banner[] }) {
               style={{ transform: `translateX(-${active * 100}%)` }}
             >
               {banners.map((banner) => (
-                <div key={banner.id} className="relative min-w-full h-44">
+                <div key={banner.id} className="relative min-w-full aspect-[5/2]">
                   <Image
                     src={banner.image_url}
                     alt="Flyer"
