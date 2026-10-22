@@ -1,4 +1,5 @@
 // Thermal receipt builder (58mm — compatible with 58mm & 80mm printers).
+import { KATRESNA_LOGO } from './katresnaLogo'
 
 export interface PrintItem {
   name: string
@@ -39,6 +40,15 @@ function totalQty(items: PrintItem[]) {
   return items.reduce((s, i) => s + i.quantity, 0)
 }
 
+function logoHeader(title?: string, subtitle?: string): string {
+  return `
+  <div class="center">
+    <img class="logo" src="${KATRESNA_LOGO}" alt="Bolen Katresna" />
+    ${subtitle ? `<div class="small">${esc(subtitle)}</div>` : ''}
+    ${title ? `<div class="doctitle">${esc(title)}</div>` : ''}
+  </div>`
+}
+
 function customerBody(o: PrintOrder): string {
   const rows = o.items.map(it => {
     const head = `${it.quantity}x ${esc(it.name)}`
@@ -52,10 +62,7 @@ function customerBody(o: PrintOrder): string {
     `<div class="sum${strong ? ' strong' : ''}"><span>${label}</span><span>${val}</span></div>`
 
   return `
-  <div class="center">
-    <div class="shop">BOLEN KATRESNA</div>
-    <div class="small">Oleh-oleh khas Bandung</div>
-  </div>
+  ${logoHeader(undefined, 'Oleh-oleh khas Bandung')}
   <div class="hr"></div>
   ${o.invoiceNo ? `<div class="kv">No&nbsp;&nbsp;: ${esc(o.invoiceNo)}</div>` : ''}
   <div class="kv">Tgl&nbsp;: ${esc(o.date || today())}</div>
@@ -77,7 +84,7 @@ function customerBody(o: PrintOrder): string {
 function logisticBody(o: PrintOrder): string {
   const ship = o.shippingMethod === 'pickup' ? 'Ambil sendiri' : (o.courier || '-')
   return `
-  <div class="center"><div class="shop">PENGIRIMAN</div></div>
+  ${logoHeader('PENGIRIMAN')}
   <div class="hr"></div>
   ${o.invoiceNo ? `<div class="kv">No&nbsp;&nbsp;&nbsp;: ${esc(o.invoiceNo)}</div>` : ''}
   ${o.queueNo ? `<div class="kv big">Antrian #${o.queueNo}</div>` : ''}
@@ -99,7 +106,7 @@ function checkerBody(o: PrintOrder): string {
     return `<div class="ck">&#9744; ${it.quantity}x ${esc(it.name)}</div>${isian}`
   }).join('')
   return `
-  <div class="center"><div class="shop">CHECKLIST PACKING</div></div>
+  ${logoHeader('CHECKLIST PACKING')}
   <div class="hr"></div>
   ${o.invoiceNo ? `<div class="kv">No&nbsp;&nbsp;: ${esc(o.invoiceNo)}</div>` : ''}
   ${o.queueNo ? `<div class="kv big">Antrian #${o.queueNo}</div>` : ''}
@@ -124,6 +131,8 @@ function docHtml(bodyHtml: string): string {
   * { margin:0; padding:0; box-sizing:border-box; }
   body { width:58mm; padding:3mm 2mm; font-family:'Courier New',monospace; font-size:11px; line-height:1.35; color:#000; }
   .center { text-align:center; }
+  .logo { width:42mm; height:auto; display:block; margin:0 auto 1mm; filter:grayscale(1) brightness(0.3) contrast(3); image-rendering:-webkit-optimize-contrast; }
+  .doctitle { font-size:14px; font-weight:bold; letter-spacing:1px; margin-top:1mm; }
   .shop { font-size:15px; font-weight:bold; letter-spacing:.5px; }
   .small { font-size:10px; }
   .big { font-size:13px; font-weight:bold; }
@@ -140,7 +149,22 @@ function docHtml(bodyHtml: string): string {
   .cksub { font-size:10px; padding-left:14px; }
   .sign { margin-top:14px; }
   </style></head><body>${bodyHtml}
-  <script>window.onload=function(){setTimeout(function(){window.print();},150);};window.onafterprint=function(){window.close();};</script>
+  <script>
+    function doPrint(){ try{ window.focus(); window.print(); }catch(e){} }
+    window.onafterprint=function(){ window.close(); };
+    window.onload=function(){
+      var imgs=document.images, pending=imgs.length, done=false;
+      function go(){ if(done) return; done=true; setTimeout(doPrint, 120); }
+      if(pending===0){ go(); return; }
+      var fallback=setTimeout(go, 1500);
+      for(var i=0;i<imgs.length;i++){
+        if(imgs[i].complete){ if(--pending===0){ clearTimeout(fallback); go(); } }
+        else {
+          imgs[i].onload=imgs[i].onerror=function(){ if(--pending===0){ clearTimeout(fallback); go(); } };
+        }
+      }
+    };
+  </script>
   </body></html>`
 }
 
