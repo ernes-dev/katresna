@@ -26,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         .eq('user_id', user.id)
         .single()
 
-      const fullAdmin = !profile || profile.role === 'admin'
+      const fullAdmin = !profile || profile.role === 'admin' || profile.role === 'owner'
       setIsFullAdmin(fullAdmin)
 
       if (!fullAdmin && !RESELLER_ALLOWED.some(p => pathname === p || pathname.startsWith(p + '/'))) {

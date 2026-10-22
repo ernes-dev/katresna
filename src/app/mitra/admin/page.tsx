@@ -29,7 +29,7 @@ export default function MitraAdminPage() {
         .eq('user_id', user.id)
         .single()
 
-      if (!profile || profile.role !== 'admin') {
+      if (!profile || (profile.role !== 'admin' && profile.role !== 'owner')) {
         router.replace('/mitra/dashboard')
         return
       }

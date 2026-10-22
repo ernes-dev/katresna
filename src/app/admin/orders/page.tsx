@@ -43,7 +43,7 @@ export default function OrdersPage() {
       .eq('user_id', user.id)
       .single()
 
-    const isFullAdmin = !profile || profile.role === 'admin'
+    const isFullAdmin = !profile || profile.role === 'admin' || profile.role === 'owner'
     setIsAdmin(isFullAdmin)
 
     const query = supabase

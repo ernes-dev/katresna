@@ -23,6 +23,7 @@ interface MitraAccount {
 }
 
 const ROLE_STYLE: Record<string, { label: string; bg: string; text: string }> = {
+  owner:     { label: 'Owner',     bg: 'bg-amber-100',  text: 'text-amber-700' },
   admin:     { label: 'Admin',     bg: 'bg-red-100',    text: 'text-red-700' },
   reseller:  { label: 'Reseller',  bg: 'bg-purple-100', text: 'text-purple-700' },
   jastiper:  { label: 'Jastiper',  bg: 'bg-blue-100',   text: 'text-blue-700' },
@@ -187,7 +188,7 @@ export default function AdminAccountsPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.replace('/mitra/login'); return }
     const { data: profile } = await supabase.from('resellers').select('role').eq('user_id', user.id).single()
-    if (!profile || profile.role !== 'admin') { router.replace('/mitra/dashboard'); return }
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'owner')) { router.replace('/mitra/dashboard'); return }
 
     const { from, to } = getRange()
     const fromStart = from
@@ -321,7 +322,7 @@ export default function AdminAccountsPage() {
         <div className="space-y-3">
           {filtered.map(a => {
             const roleInfo = ROLE_STYLE[a.role] ?? ROLE_STYLE.reseller
-            const isMitra = a.role !== 'admin'
+            const isMitra = a.role !== 'admin' && a.role !== 'owner'
             return (
               <div key={a.id} className="rounded-2xl bg-white border border-[#f0e8dc] shadow-sm p-4">
                 {/* Header */}

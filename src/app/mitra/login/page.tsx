@@ -40,7 +40,7 @@ export default function MitraLoginPage() {
       return
     }
 
-    if (reseller.role === 'admin') {
+    if (reseller.role === 'admin' || reseller.role === 'owner') {
       router.replace('/mitra/admin')
       return
     }

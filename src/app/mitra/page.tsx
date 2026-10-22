@@ -13,7 +13,7 @@ export default function MitraRoot() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         const { data: reseller } = await supabase.from('resellers').select('role').eq('user_id', user.id).single()
-        if (reseller?.role === 'admin') {
+        if (reseller?.role === 'admin' || reseller?.role === 'owner') {
           router.replace('/mitra/admin')
         } else {
           router.replace('/mitra/dashboard')
