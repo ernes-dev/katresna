@@ -1,10 +1,11 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { RefreshCw, Phone, MapPin, Clock, Package } from 'lucide-react'
+import { RefreshCw, Phone, MapPin, Clock, Package, Printer } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Order } from '@/lib/types'
 import { formatPrice } from '@/lib/utils'
 import { getCommissionTiers, getCommissionTier, calculateCommission } from '@/lib/mitra'
+import { printReceipt, type PrintOrder, type ReceiptType } from '@/lib/printReceipt'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending:    { label: 'Menunggu',   color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
@@ -104,6 +105,31 @@ export default function OrdersPage() {
       if (order) await generateCommission(order)
     }
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status: status as Order['status'] } : o))
+  }
+
+  const doPrint = (order: Order, qNum: number, type: ReceiptType) => {
+    const items = (order.items as any[]).map(i => ({
+      name: i.name, quantity: i.quantity, price: i.price, isian: i.isian,
+    }))
+    const serviceFee = (order as any).service_fee || 0
+    const reseller = (order as any).reseller
+    const po: PrintOrder = {
+      invoiceNo: order.id.slice(0, 8).toUpperCase(),
+      date: new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+      customerName: order.customer_name,
+      phone: order.customer_whatsapp,
+      address: order.address,
+      courier: order.courier,
+      shippingMethod: order.shipping_method,
+      items,
+      subtotal: order.subtotal,
+      serviceFee,
+      total: order.subtotal + serviceFee,
+      notes: (order as any).notes || null,
+      resellerName: reseller?.full_name || null,
+      queueNo: qNum > 0 ? qNum : null,
+    }
+    printReceipt(po, type)
   }
 
   const todayOrders = orders.filter(o => {
@@ -211,6 +237,23 @@ export default function OrdersPage() {
                   {order.address && order.shipping_method !== 'pickup' && (
                     <span className="truncate">— {order.address}</span>
                   )}
+                </div>
+
+                {/* Print */}
+                <div className="flex items-center gap-1.5 px-4 pt-3">
+                  <Printer size={12} className="text-gray-400 flex-shrink-0" />
+                  <button onClick={() => doPrint(order, qNum, 'customer')}
+                    className="flex-1 text-[11px] font-semibold text-gray-600 border border-gray-200 rounded-lg py-1.5 hover:border-brand hover:text-brand hover:bg-brand-light/40 active:scale-[0.97] transition">
+                    Customer
+                  </button>
+                  <button onClick={() => doPrint(order, qNum, 'logistic')}
+                    className="flex-1 text-[11px] font-semibold text-gray-600 border border-gray-200 rounded-lg py-1.5 hover:border-brand hover:text-brand hover:bg-brand-light/40 active:scale-[0.97] transition">
+                    Logistic
+                  </button>
+                  <button onClick={() => doPrint(order, qNum, 'checker')}
+                    className="flex-1 text-[11px] font-semibold text-gray-600 border border-gray-200 rounded-lg py-1.5 hover:border-brand hover:text-brand hover:bg-brand-light/40 active:scale-[0.97] transition">
+                    Checker
+                  </button>
                 </div>
 
                 {/* Actions */}

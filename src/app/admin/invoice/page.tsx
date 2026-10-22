@@ -5,6 +5,8 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Product } from '@/lib/types'
 import { formatPrice } from '@/lib/utils'
+import { printReceipt, type PrintOrder, type ReceiptType } from '@/lib/printReceipt'
+import { Printer } from 'lucide-react'
 
 function IsianModal({
   maxItems,
@@ -292,6 +294,7 @@ export default function InvoicePage() {
   const [isPO, setIsPO] = useState(false)
   const [cashbackType, setCashbackType] = useState<'none' | 'percent' | 'fixed'>('none')
   const [cashbackValue, setCashbackValue] = useState(0)
+  const [serviceFee, setServiceFee] = useState(0)
   const [products, setProducts] = useState<Product[]>([])
   const [copied, setCopied] = useState(false)
   const [pickerOpenFor, setPickerOpenFor] = useState<number | null>(null)
@@ -322,7 +325,7 @@ export default function InvoicePage() {
     })
   }, [])
 
-  useEffect(() => { setSavedOrder(false) }, [items, customerWA, customerName, shippingCost])
+  useEffect(() => { setSavedOrder(false) }, [items, customerWA, customerName, shippingCost, serviceFee])
 
   const addItem = () => setItems(prev => [...prev, { name: '', qty: 1, price: 0 }])
   const removeItem = (i: number) => setItems(prev => prev.filter((_, idx) => idx !== i))
@@ -333,8 +336,31 @@ export default function InvoicePage() {
   const cashbackAmount = cashbackType === 'percent'
     ? Math.round(subtotal * cashbackValue / 100)
     : cashbackType === 'fixed' ? cashbackValue : 0
-  const total = subtotal + shippingCost - cashbackAmount
+  const total = subtotal + shippingCost + serviceFee - cashbackAmount
   const displayInvoiceNumber = isPO ? invoiceNumber.replace('INV-', 'PO-') : invoiceNumber
+
+  const buildPrintOrder = (): PrintOrder => ({
+    invoiceNo: displayInvoiceNumber,
+    customerName: customerName || resellerName || 'Pelanggan',
+    phone: customerWA.trim() || null,
+    resellerName: isPO && resellerName ? resellerName : null,
+    items: items.filter(i => i.name.trim()).map(i => ({
+      name: i.name, quantity: i.qty, price: i.price, isian: i.isian,
+    })),
+    subtotal,
+    shippingCost,
+    serviceFee,
+    discount: cashbackAmount,
+    total,
+    notes: notes || null,
+  })
+
+  const handlePrint = async (type: ReceiptType) => {
+    const po = buildPrintOrder()
+    if (po.items.length === 0) { alert('Belum ada item'); return }
+    await saveOrder()
+    printReceipt(po, type)
+  }
 
   const buildMessage = () => {
     const date = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -357,7 +383,7 @@ Tanggal: ${date}
 *PESANAN:*
 ${itemLines}
 ━━━━━━━━━━━━━━
-Subtotal: ${formatPrice(subtotal)}${shippingCost > 0 ? `\nOngkir: ${formatPrice(shippingCost)}` : ''}${cashbackAmount > 0 ? `\nCashback${cashbackType === 'percent' ? ` (${cashbackValue}%)` : ''}: -${formatPrice(cashbackAmount)}` : ''}
+Subtotal: ${formatPrice(subtotal)}${shippingCost > 0 ? `\nOngkir: ${formatPrice(shippingCost)}` : ''}${serviceFee > 0 ? `\nJasa: ${formatPrice(serviceFee)}` : ''}${cashbackAmount > 0 ? `\nCashback${cashbackType === 'percent' ? ` (${cashbackValue}%)` : ''}: -${formatPrice(cashbackAmount)}` : ''}
 *TOTAL: ${formatPrice(total)}*
 ━━━━━━━━━━━━━━${notes ? `\nCatatan: ${notes}\n━━━━━━━━━━━━━━` : ''}
 Mohon lakukan pembayaran sesuai total di atas.
@@ -380,6 +406,7 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
       customer_whatsapp: customerWA.trim(),
       items: orderItems,
       subtotal,
+      service_fee: serviceFee || 0,
       shipping_method: null,
       address: null,
       courier: null,
@@ -583,6 +610,14 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
               placeholder="0 (kosongkan jika gratis)" className={inputClass} />
           </div>
 
+          {/* Jasa (jastiper) */}
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">Jasa Tambahan (Rp)</label>
+            <input type="number" value={serviceFee || ''} min={0}
+              onChange={e => setServiceFee(Number(e.target.value))}
+              placeholder="0 (jasa jastiper, isi bebas)" className={inputClass} />
+          </div>
+
           {/* Cashback */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1.5">Cashback / Diskon</label>
@@ -632,6 +667,11 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
             <div className="flex justify-between text-sm text-gray-600">
               <span>Subtotal</span><span className="font-medium">{formatPrice(subtotal)}</span>
             </div>
+            {serviceFee > 0 && (
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Jasa</span><span className="font-medium">{formatPrice(serviceFee)}</span>
+              </div>
+            )}
             {shippingCost > 0 && (
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Ongkir</span><span className="font-medium">{formatPrice(shippingCost)}</span>
@@ -672,6 +712,28 @@ Terima kasih telah memesan Bolen Katresna! 🎉`
             <Check size={15} /> Pesanan tersimpan &amp; masuk ke antrian Pesanan kamu
           </div>
         )}
+
+        {/* Print */}
+        <div className="bg-white rounded-3xl p-4 shadow-soft border border-[#f0e8dc]">
+          <div className="flex items-center gap-2 mb-3">
+            <Printer size={15} className="text-brand" />
+            <p className="text-sm font-bold text-gray-800">Cetak Struk</p>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <button onClick={() => handlePrint('customer')}
+              className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-gray-200 hover:border-brand hover:bg-brand-light/50 active:scale-[0.97] transition text-xs font-semibold text-gray-700">
+              <Printer size={16} className="text-brand" /> Customer
+            </button>
+            <button onClick={() => handlePrint('logistic')}
+              className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-gray-200 hover:border-brand hover:bg-brand-light/50 active:scale-[0.97] transition text-xs font-semibold text-gray-700">
+              <Printer size={16} className="text-brand" /> Logistic
+            </button>
+            <button onClick={() => handlePrint('checker')}
+              className="flex flex-col items-center gap-1 py-2.5 rounded-xl border border-gray-200 hover:border-brand hover:bg-brand-light/50 active:scale-[0.97] transition text-xs font-semibold text-gray-700">
+              <Printer size={16} className="text-brand" /> Checker
+            </button>
+          </div>
+        </div>
 
         {/* Preview */}
         <div className="bg-white rounded-3xl border border-[#f0e8dc] shadow-soft overflow-hidden">
