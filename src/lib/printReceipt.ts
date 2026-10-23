@@ -160,7 +160,15 @@ function docHtml(bodyHtml: string): string {
   .sign { margin-top:14px; }
   </style></head><body><div id="rcpt">${bodyHtml}</div>
   <script>
-    function doPrint(){ try{ window.focus(); window.print(); }catch(e){} }
+    function setPageSize(){
+      try{
+        var h=Math.ceil(document.getElementById('rcpt').getBoundingClientRect().height*25.4/96)+6;
+        var st=document.createElement('style');
+        st.textContent='@page{size:58mm '+h+'mm;margin:0}';
+        document.head.appendChild(st);
+      }catch(e){}
+    }
+    function doPrint(){ setPageSize(); try{ window.focus(); window.print(); }catch(e){} }
     window.onafterprint=function(){ window.close(); };
     window.onload=function(){
       var imgs=document.images, pending=imgs.length, done=false;
