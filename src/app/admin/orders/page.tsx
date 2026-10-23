@@ -1,11 +1,12 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
-import { RefreshCw, Phone, MapPin, Clock, Package, Printer } from 'lucide-react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { RefreshCw, Phone, MapPin, Clock, Package, Printer, Calendar, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Order } from '@/lib/types'
 import { formatPrice } from '@/lib/utils'
 import { getCommissionTiers, getCommissionTier, calculateCommission } from '@/lib/mitra'
 import { printReceipt, type PrintOrder, type ReceiptType } from '@/lib/printReceipt'
+import { CalendarPicker, formatDisplayRange, today } from '@/components/CalendarPicker'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending:    { label: 'Menunggu',   color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
@@ -30,8 +31,19 @@ function queueLabel(orders: Order[], order: Order): number {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'today' | 'all'>('today')
+  const [rangeFrom, setRangeFrom] = useState(today)
+  const [rangeTo, setRangeTo] = useState(today)
+  const [calOpen, setCalOpen] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+  const calRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (calRef.current && !calRef.current.contains(e.target as Node)) setCalOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   const fetchOrders = useCallback(async () => {
     const supabase = createClient()
@@ -54,15 +66,14 @@ export default function OrdersPage() {
     if (!isFullAdmin) {
       query.eq('reseller_id', profile!.id)
     }
-    if (filter === 'today') {
-      const jakartaToday = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }))
-      jakartaToday.setHours(0, 0, 0, 0)
-      query.gte('created_at', jakartaToday.toISOString())
-    }
-    const { data } = await query.limit(100)
+    const fromIso = new Date(rangeFrom + 'T00:00:00').toISOString()
+    const toIso = new Date(rangeTo + 'T23:59:59').toISOString()
+    query.gte('created_at', fromIso).lte('created_at', toIso)
+
+    const { data } = await query.limit(200)
     setOrders((data as Order[]) || [])
     setLoading(false)
-  }, [filter])
+  }, [rangeFrom, rangeTo])
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
@@ -132,11 +143,6 @@ export default function OrdersPage() {
     printReceipt(po, type)
   }
 
-  const todayOrders = orders.filter(o => {
-    const today = new Date().toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' })
-    return new Date(o.created_at).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' }) === today
-  })
-
   const pending = orders.filter(o => o.status === 'pending').length
   const processing = orders.filter(o => o.status === 'processing').length
 
@@ -144,15 +150,31 @@ export default function OrdersPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Antrian Pesanan</h1>
+          <h1 className="font-display text-2xl font-semibold text-gray-900">Antrian Pesanan</h1>
           <p className="text-sm text-gray-400 mt-0.5">
-            Hari ini: {todayOrders.length} pesanan · {pending} menunggu · {processing} diproses
+            {orders.length} pesanan · {pending} menunggu · {processing} diproses
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex rounded-xl border border-gray-200 overflow-hidden text-sm">
-            <button onClick={() => setFilter('today')} className={`px-3 py-1.5 font-medium transition ${filter === 'today' ? 'bg-brand text-white' : 'text-gray-600 hover:bg-gray-50'}`}>Hari ini</button>
-            <button onClick={() => setFilter('all')} className={`px-3 py-1.5 font-medium transition ${filter === 'all' ? 'bg-brand text-white' : 'text-gray-600 hover:bg-gray-50'}`}>Semua</button>
+          <div className="relative" ref={calRef}>
+            <button
+              onClick={() => setCalOpen(v => !v)}
+              className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-sm hover:border-brand/40 transition"
+            >
+              <Calendar size={15} className="text-brand shrink-0" />
+              <span className="font-medium text-gray-700">{formatDisplayRange(rangeFrom, rangeTo)}</span>
+              <ChevronRight size={14} className={`text-gray-400 transition-transform ${calOpen ? 'rotate-90' : ''}`} />
+            </button>
+            {calOpen && (
+              <div className="absolute top-full mt-2 right-0 z-50 bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden">
+                <CalendarPicker
+                  from={rangeFrom}
+                  to={rangeTo}
+                  onChange={(f, t) => { setRangeFrom(f); setRangeTo(t) }}
+                  onClose={() => setCalOpen(false)}
+                />
+              </div>
+            )}
           </div>
           <button onClick={fetchOrders} className="p-2 hover:bg-gray-100 rounded-xl transition text-gray-500">
             <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
@@ -165,7 +187,7 @@ export default function OrdersPage() {
       ) : orders.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <Package size={48} className="mx-auto mb-3 opacity-30" />
-          <p>Belum ada pesanan {filter === 'today' ? 'hari ini' : ''}</p>
+          <p>Belum ada pesanan pada periode ini</p>
         </div>
       ) : (
         <div className="space-y-3">
