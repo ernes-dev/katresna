@@ -157,13 +157,22 @@ function docHtml(bodyHtml: string): string {
   .ck { margin-top:3px; font-size:12px; }
   .cksub { font-size:10px; padding-left:14px; }
   .sign { margin-top:14px; }
-  </style></head><body>${bodyHtml}
+  </style></head><body><div id="rcpt">${bodyHtml}</div>
   <script>
-    function doPrint(){ try{ window.focus(); window.print(); }catch(e){} }
+    function setPageHeight(){
+      try{
+        var px=Math.max(document.body.scrollHeight, document.getElementById('rcpt').getBoundingClientRect().height);
+        var mm=Math.ceil(px*25.4/96)+3;
+        var st=document.createElement('style');
+        st.textContent='@page{size:58mm '+mm+'mm;margin:0}';
+        document.head.appendChild(st);
+      }catch(e){}
+    }
+    function doPrint(){ setPageHeight(); try{ window.focus(); window.print(); }catch(e){} }
     window.onafterprint=function(){ window.close(); };
     window.onload=function(){
       var imgs=document.images, pending=imgs.length, done=false;
-      function go(){ if(done) return; done=true; setTimeout(doPrint, 120); }
+      function go(){ if(done) return; done=true; setTimeout(doPrint, 150); }
       if(pending===0){ go(); return; }
       var fallback=setTimeout(go, 1500);
       for(var i=0;i<imgs.length;i++){
