@@ -83,6 +83,11 @@ function customerBody(o: PrintOrder): string {
 
 function logisticBody(o: PrintOrder): string {
   const ship = o.shippingMethod === 'pickup' ? 'Ambil sendiri' : (o.courier || '-')
+  const rows = o.items.map(it => {
+    const isian = it.isian && it.isian.length
+      ? `<div class="cksub">Isian: ${esc(it.isian.join(', '))}</div>` : ''
+    return `<div class="ck">${it.quantity}x ${esc(it.name)}</div>${isian}`
+  }).join('')
   return `
   ${logoHeader('PENGIRIMAN')}
   <div class="hr"></div>
@@ -94,6 +99,9 @@ function logisticBody(o: PrintOrder): string {
   <div class="hr"></div>
   <div class="kv">Alamat:</div>
   <div class="addr">${esc(o.address || '-')}</div>
+  <div class="hr"></div>
+  <div class="kv bold">ISI PAKET:</div>
+  ${rows}
   <div class="hr"></div>
   <div class="kv">Total item: ${totalQty(o.items)} pcs</div>
   ${o.notes ? `<div class="small">Catatan: ${esc(o.notes)}</div>` : ''}`
@@ -136,6 +144,7 @@ function docHtml(bodyHtml: string): string {
   .shop { font-size:15px; font-weight:bold; letter-spacing:.5px; }
   .small { font-size:10px; }
   .big { font-size:13px; font-weight:bold; }
+  .bold { font-weight:bold; }
   .hr { border-top:1px dashed #000; margin:4px 0; }
   .kv { white-space:pre-wrap; }
   .addr { white-space:pre-wrap; font-weight:bold; }
