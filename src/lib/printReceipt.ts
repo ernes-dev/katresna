@@ -135,11 +135,12 @@ const BUILDERS: Record<ReceiptType, (o: PrintOrder) => string> = {
 
 function docHtml(bodyHtml: string): string {
   return `<!doctype html><html><head><meta charset="utf-8"><title>Struk</title><style>
-  @page { size: 58mm auto; margin: 0; }
+  @page { margin: 0; }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { width:58mm; padding:3mm 2mm; font-family:'Courier New',monospace; font-size:11px; line-height:1.35; color:#000; }
+  html, body { width:100%; }
+  body { padding:2mm; font-family:'Courier New',monospace; font-size:11px; line-height:1.35; color:#000; }
   .center { text-align:center; }
-  .logo { width:42mm; height:auto; display:block; margin:0 auto 1mm; filter:grayscale(1) brightness(0.3) contrast(3); image-rendering:-webkit-optimize-contrast; }
+  .logo { width:72%; max-width:46mm; height:auto; display:block; margin:0 auto 1mm; filter:grayscale(1) brightness(0.3) contrast(3); image-rendering:-webkit-optimize-contrast; }
   .doctitle { font-size:14px; font-weight:bold; letter-spacing:1px; margin-top:1mm; }
   .shop { font-size:15px; font-weight:bold; letter-spacing:.5px; }
   .small { font-size:10px; }
@@ -159,16 +160,7 @@ function docHtml(bodyHtml: string): string {
   .sign { margin-top:14px; }
   </style></head><body><div id="rcpt">${bodyHtml}</div>
   <script>
-    function setPageHeight(){
-      try{
-        var px=Math.max(document.body.scrollHeight, document.getElementById('rcpt').getBoundingClientRect().height);
-        var mm=Math.ceil(px*25.4/96)+3;
-        var st=document.createElement('style');
-        st.textContent='@page{size:58mm '+mm+'mm;margin:0}';
-        document.head.appendChild(st);
-      }catch(e){}
-    }
-    function doPrint(){ setPageHeight(); try{ window.focus(); window.print(); }catch(e){} }
+    function doPrint(){ try{ window.focus(); window.print(); }catch(e){} }
     window.onafterprint=function(){ window.close(); };
     window.onload=function(){
       var imgs=document.images, pending=imgs.length, done=false;
