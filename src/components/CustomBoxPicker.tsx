@@ -29,7 +29,7 @@ export default function CustomBoxPicker({ product, onClose }: Props) {
       .select('*, category:categories(*)')
       .eq('is_available', true)
       .then(({ data }) => {
-        const bolen = (data || []).filter(p =>
+        const bolen = (data || []).filter((p: any) =>
           p.category?.name?.toLowerCase() === 'bolen' && !p.is_custom_box
         )
         setBolenItems(bolen)

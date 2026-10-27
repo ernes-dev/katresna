@@ -1,25 +1,29 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+// Drop-in replacement for the old supabase server client, backed by Postgres.
+import { execQuery } from '@/lib/pg-exec'
+import { makeFrom } from '@/lib/query-builder'
+import { getSession } from '@/lib/auth'
+import { query as dbQuery } from '@/lib/db'
 
 export async function createClient() {
-  const cookieStore = await cookies()
-
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {}
-        },
+  return {
+    from: makeFrom(execQuery),
+    auth: {
+      async getUser() {
+        const s = await getSession()
+        if (!s) return { data: { user: null }, error: null }
+        return { data: { user: { id: s.uid, email: s.email } }, error: null }
       },
-    }
-  )
+    },
+    storage: {
+      from(_bucket: string) {
+        return {
+          getPublicUrl(path: string) {
+            return { data: { publicUrl: `/uploads/${_bucket}/${path}` } }
+          },
+        }
+      },
+    },
+    // raw escape hatch
+    _query: dbQuery,
+  }
 }

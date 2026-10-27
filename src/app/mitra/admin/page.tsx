@@ -39,9 +39,9 @@ export default function MitraAdminPage() {
       if (all) {
         setStats({
           total: all.length,
-          pendingKyc: all.filter(r => r.kyc_status === 'pending').length,
-          pendingBank: all.filter(r => r.bank_status === 'pending' && r.kyc_status === 'approved').length,
-          active: all.filter(r => r.is_active).length,
+          pendingKyc: all.filter((r: any) => r.kyc_status === 'pending').length,
+          pendingBank: all.filter((r: any) => r.bank_status === 'pending' && r.kyc_status === 'approved').length,
+          active: all.filter((r: any) => r.is_active).length,
         })
       }
       setLoading(false)

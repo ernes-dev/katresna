@@ -213,7 +213,7 @@ export default function AdminAccountsPage() {
       else m.pending += c.commission_amount
     }
 
-    setAccounts((resellers ?? []).map(r => ({
+    setAccounts((resellers ?? []).map((r: any) => ({
       ...r,
       totalCommission: commMap[r.id]?.total ?? 0,
       totalOrders: commMap[r.id]?.count ?? 0,
